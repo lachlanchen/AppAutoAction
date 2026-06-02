@@ -11,7 +11,11 @@ import threading
 from typing import Any
 import webbrowser
 
+from .artifacts import ArtifactStore, content_type_for_path
+from .backends import backend_status, load_backend_settings, run_aginti_image_request, save_backend_settings
 from .blender_render import BlenderRenderError, render_scene_spec
+from .openscad_export import export_scene_to_openscad
+from .paper_figures import generate_icon_grid, parse_grid_size
 from .scene_spec import built_in_scene_template, slugify, validate_scene_spec
 
 
@@ -55,18 +59,24 @@ class AppAutoActionHandler(BaseHTTPRequestHandler):
     storage_dir = ROOT / "output" / "webapp"
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API.
+        route = self.path.split("?", 1)[0]
         if self.path == "/" or self.path.startswith("/?"):
             self.send_static("index.html")
-        elif self.path.startswith("/static/"):
-            self.send_static(self.path.removeprefix("/static/"))
-        elif self.path == "/api/spec":
+        elif route.startswith("/static/"):
+            self.send_static(route.removeprefix("/static/"))
+        elif route == "/api/spec":
             self.send_json(default_spec_response())
-        elif self.path == "/api/health":
+        elif route == "/api/health":
             self.send_json({"ok": True})
-        elif self.path == "/example-render":
+        elif route == "/api/artifacts":
+            self.send_json(ArtifactStore(self.storage_dir).bundle())
+        elif route in {"/api/settings", "/api/backends"}:
+            settings = load_backend_settings(self.settings_path())
+            self.send_json({"ok": True, "settings": settings, "status": backend_status(settings, ROOT)})
+        elif route == "/example-render":
             self.send_example_render()
-        elif self.path.startswith("/artifacts/"):
-            self.send_artifact(self.path.removeprefix("/artifacts/").split("?", 1)[0])
+        elif route.startswith("/artifacts/"):
+            self.send_artifact(route.removeprefix("/artifacts/"))
         else:
             self.send_error(HTTPStatus.NOT_FOUND)
 
@@ -80,19 +90,34 @@ class AppAutoActionHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API.
         try:
-            if self.path == "/api/chat":
+            route = self.path.split("?", 1)[0]
+            if route == "/api/chat":
                 payload = self.read_json()
                 spec = payload.get("spec") or default_scene_spec()
                 message = str(payload.get("message", ""))
-                self.send_json(chat_update(spec, message))
-            elif self.path == "/api/render":
+                settings = load_backend_settings(self.settings_path())
+                self.send_json(chat_update(spec, message, storage_dir=self.storage_dir, settings=settings))
+            elif route == "/api/render":
                 payload = self.read_json()
                 spec = payload.get("spec") or default_scene_spec()
                 self.send_json(render_web_scene(spec, self.storage_dir))
-            elif self.path == "/api/plan":
+            elif route == "/api/plan":
                 payload = self.read_json()
                 spec = payload.get("spec") or default_scene_spec()
                 self.send_json(plan_web_scene(spec, self.storage_dir))
+            elif route == "/api/settings":
+                payload = self.read_json()
+                settings = sanitize_settings(payload.get("settings") if "settings" in payload else payload)
+                saved = save_backend_settings(self.settings_path(), settings)
+                self.send_json({"ok": True, "settings": saved, "status": backend_status(saved, ROOT)})
+            elif route == "/api/figure-grid":
+                payload = self.read_json()
+                settings = load_backend_settings(self.settings_path())
+                self.send_json(generate_web_figure_grid(payload, self.storage_dir, settings))
+            elif route == "/api/openscad-export":
+                payload = self.read_json()
+                spec = payload.get("spec") or default_scene_spec()
+                self.send_json(export_web_openscad(spec, self.storage_dir))
             else:
                 self.send_error(HTTPStatus.NOT_FOUND)
         except (BlenderRenderError, ValueError, KeyError) as exc:
@@ -136,11 +161,7 @@ class AppAutoActionHandler(BaseHTTPRequestHandler):
         if not path.is_file() or self.storage_dir.resolve() not in path.parents:
             self.send_error(HTTPStatus.NOT_FOUND)
             return
-        content_type = "application/octet-stream"
-        if path.suffix == ".png":
-            content_type = "image/png"
-        elif path.suffix == ".blend":
-            content_type = "application/octet-stream"
+        content_type = content_type_for_path(path)
         body = path.read_bytes()
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", content_type)
@@ -172,6 +193,9 @@ class AppAutoActionHandler(BaseHTTPRequestHandler):
     def log_message(self, format: str, *args: Any) -> None:
         return
 
+    def settings_path(self) -> Path:
+        return self.storage_dir / "settings.json"
+
 
 def default_spec_response() -> dict[str, Any]:
     spec = default_scene_spec()
@@ -189,7 +213,13 @@ def default_scene_spec() -> dict[str, Any]:
     return built_in_scene_template("experiment-setup")
 
 
-def chat_update(spec: dict[str, Any], message: str) -> dict[str, Any]:
+def chat_update(
+    spec: dict[str, Any],
+    message: str,
+    *,
+    storage_dir: Path | None = None,
+    settings: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     updated = deepcopy(spec)
     validate_scene_spec(updated)
     text = message.strip()
@@ -242,16 +272,33 @@ def chat_update(spec: dict[str, Any], message: str) -> dict[str, Any]:
         ensure_camera(updated)
         actions.append("Ensured the camera stage is present.")
 
+    artifact_bundle: dict[str, Any] | None = None
+    if storage_dir and any(word in lowered for word in ("grid", "figure", "icons", "panels")):
+        figure = generate_web_figure_grid({"prompt": text}, storage_dir, settings or load_backend_settings(storage_dir / "settings.json"))
+        artifact_bundle = figure.get("artifacts")
+        actions.append(f"Generated a {figure['rows']}x{figure['cols']} paper figure grid artifact.")
+
+    if storage_dir and ("openscad" in lowered or "open scad" in lowered or "cad export" in lowered):
+        export = export_web_openscad(updated, storage_dir)
+        artifact_bundle = export.get("artifacts")
+        actions.append("Exported the scene as an OpenSCAD planning artifact.")
+
+    if "biorender" in lowered:
+        actions.append("BioRender settings are ready for the official MCP connector endpoint.")
+
     if not actions:
         actions.append("Kept the scene structure and prepared it for preview.")
 
     validate_scene_spec(updated)
-    return {
+    response = {
         "ok": True,
         "reply": " ".join(actions),
         "spec": updated,
         "actions": actions,
     }
+    if artifact_bundle:
+        response["artifacts"] = artifact_bundle
+    return response
 
 
 def render_web_scene(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
@@ -268,11 +315,17 @@ def render_web_scene(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
     png = Path(result["plan"]["png"])
     blend = Path(result["plan"]["blend"])
     stamp = int(png.stat().st_mtime) if png.exists() else 0
+    store = ArtifactStore(storage_dir)
+    image_item = store.register(png, title=f"Render: {result['plan']['title']}", kind="image", source="blender", preview="Headless Blender PNG render.")
+    store.register(blend, title=f"Blend: {result['plan']['title']}", kind="model", source="blender", preview="Generated Blender scene file.", selected=False)
+    store.register(spec_path, title=f"Scene spec: {result['plan']['title']}", kind="json", source="scene-spec", preview="JSON source of truth for the render.", selected=False)
     result.update(
         {
             "image_url": f"/artifacts/renders/{png.name}?v={stamp}",
             "blend_url": f"/artifacts/renders/{blend.name}?v={stamp}",
             "spec_url": f"/artifacts/specs/{spec_path.name}?v={stamp}",
+            "artifact": image_item,
+            "artifacts": store.bundle(),
         }
     )
     return result
@@ -291,6 +344,104 @@ def plan_web_scene(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
     result = render_scene_spec(spec_path, output_dir, dry_run=True)
     result["message"] = "Render plan is valid."
     return result
+
+
+def generate_web_figure_grid(payload: dict[str, Any], storage_dir: Path, settings: dict[str, Any]) -> dict[str, Any]:
+    prompt = str(payload.get("prompt") or "scientific paper figure icons for an experiment setup")
+    figure_settings = settings.get("figure", {}) if isinstance(settings.get("figure"), dict) else {}
+    default_rows = int(figure_settings.get("rows") or 2)
+    default_cols = int(figure_settings.get("cols") or 3)
+    parsed_rows, parsed_cols = parse_grid_size(prompt, default_rows, default_cols)
+    rows = int(payload.get("rows") or parsed_rows)
+    cols = int(payload.get("cols") or parsed_cols)
+    labels = payload.get("labels")
+    if labels is not None and not isinstance(labels, list):
+        raise ValueError("labels must be a list when provided")
+
+    result = generate_icon_grid(
+        prompt,
+        storage_dir / "figures",
+        rows=rows,
+        cols=cols,
+        cell_size=int(figure_settings.get("cell_size") or 240),
+        border=int(figure_settings.get("border") or 4),
+        labels=[str(label) for label in labels] if labels else None,
+    )
+    store = ArtifactStore(storage_dir)
+    figure_item = store.register(
+        result.path,
+        title=f"Figure grid: {result.title}",
+        kind="image",
+        source="paper-figure",
+        preview=f"Exact {result.rows}x{result.cols} SVG grid with black panel boundaries.",
+    )
+
+    aginti_prompt = (
+        "Generate a clean set of no-text scientific icon concepts for a paper figure. "
+        f"Topic: {prompt}. Keep each icon isolated, consistent, publication-safe, and suitable for a {result.rows}x{result.cols} panel grid."
+    )
+    aginti_result = run_aginti_image_request(
+        aginti_prompt,
+        storage_dir / "aginti" / result.path.stem,
+        settings=settings,
+        project_root=ROOT,
+        output_stem=result.path.stem,
+    )
+    register_aginti_outputs(store, aginti_result)
+    return {
+        "ok": True,
+        "rows": result.rows,
+        "cols": result.cols,
+        "figure": result.to_dict(),
+        "figure_url": figure_item["url"],
+        "artifact": figure_item,
+        "artifacts": store.bundle(),
+        "aginti": aginti_result,
+    }
+
+
+def export_web_openscad(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
+    result = export_scene_to_openscad(spec, storage_dir / "openscad")
+    store = ArtifactStore(storage_dir)
+    item = store.register(
+        result.path,
+        title=f"OpenSCAD: {result.title}",
+        kind="openscad",
+        source="openscad",
+        preview="Simplified CAD proxy for mechanical layout planning.",
+    )
+    return {"ok": True, "export": result.to_dict(), "artifact": item, "artifacts": store.bundle()}
+
+
+def register_aginti_outputs(store: ArtifactStore, result: dict[str, Any]) -> None:
+    for key, title, kind in (
+        ("promptPath", "AgInTi image prompt", "text"),
+        ("requestPayloadPath", "AgInTi image request", "json"),
+        ("manifestPath", "AgInTi image manifest", "json"),
+    ):
+        raw = result.get(key)
+        if not raw:
+            continue
+        path = Path(str(raw))
+        if not path.is_absolute():
+            path = ROOT / path
+        if path.exists():
+            store.register(path, title=title, kind=kind, source="aginti", preview=str(result.get("summary") or ""), selected=False)
+
+
+def sanitize_settings(settings: Any) -> dict[str, Any]:
+    if not isinstance(settings, dict):
+        raise ValueError("settings must be a JSON object")
+    blocked = {"api_key", "apikey", "token", "secret", "password"}
+
+    def scrub(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {key: scrub(item) for key, item in value.items() if key.lower() not in blocked}
+        if isinstance(value, list):
+            return [scrub(item) for item in value]
+        return value
+
+    return scrub(settings)
 
 
 def extract_quoted(text: str) -> str | None:

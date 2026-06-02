@@ -14,6 +14,7 @@
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
+  <a href="#paper-figure-studio">Paper Figures</a> ·
   <a href="#3d-experiment-design">3D Design</a> ·
   <a href="#targets">Targets</a> ·
   <a href="#research-backed-design">Research</a> ·
@@ -42,6 +43,22 @@ After installation, the console command is also available as:
 app-auto-action list
 app-auto-action dispatch unity "Create a test scene with three labeled cubes" --dry-run
 ```
+
+## Paper Figure Studio
+
+```bash
+app-auto-action web --port 8787 --open
+```
+
+The web app now has a chat panel, artifact canvas, scene editor, and backend settings. It can:
+
+- Generate exact `NxM` SVG paper-figure grids with black panel boundaries.
+- Prepare AgInTi image-generation dry-run payloads for scientific icon concepts.
+- Store BioRender MCP settings without storing secrets.
+- Export the current scene to OpenSCAD for mechanical layout planning.
+- Render the scene through Blender and preview PNG, `.blend`, `.scad`, JSON, and text artifacts.
+
+Artifacts are tracked under `output/webapp/artifacts.json` and served in the canvas rail. See [docs/PAPER_FIGURE_STUDIO.md](docs/PAPER_FIGURE_STUDIO.md) and [docs/WEBAPP.md](docs/WEBAPP.md).
 
 ## 3D Experiment Design
 
@@ -77,6 +94,7 @@ The command bridge is [bridges/codex_exec_blender.sh](bridges/codex_exec_blender
 | Target | Current adapter | Best bridge shape | Notes |
 | --- | --- | --- | --- |
 | Blender | `http_json` | Blender MCP add-on, local HTTP, or command bridge | Good for scene generation, materials, rendering, export. |
+| AgInTi | `local_command` via web settings | `aginti image --json` | Dry-run image payloads for figure concepts; live calls require provider keys. |
 | BioRender | `browser` plus MCP metadata | Official remote MCP connector | Use OAuth/API-supported flows; avoid scraping. |
 | Unity | `http_json` | Unity package, WebSocket proxy, or C# editor bridge | Good for scenes, assets, scripts, tests, play mode. |
 | Unreal | `http_json` | Unreal MCP plugin or Python remote execution proxy | Treat as privileged editor access. |

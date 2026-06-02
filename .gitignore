@@ -9,3 +9,6 @@ dist/
 agenticapp.targets.json
 output/
 *.blend1
+.aginti/.env
+.aginti/.env.*
+!.aginti/.env.example
