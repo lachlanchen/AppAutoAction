@@ -21,6 +21,14 @@
   <a href="#multilingual">11 Languages</a>
 </p>
 
+<p align="center">
+  <img src="docs/assets/appautoaction-vspice-studio.png" alt="AppAutoAction Paper Figure Studio showing a V-SPICE chat task with OpenSCAD, Blender, and rendered canvas artifacts" width="1100">
+</p>
+
+<p align="center">
+  Live studio demo: chat asks for a V-SPICE experiment setup, OpenSCAD exports the CAD proxy, and Blender renders the selected right-side canvas artifact.
+</p>
+
 ## Why This Exists
 
 Creative tools are gaining agent bridges, but each bridge has a different install path, port, protocol, and safety model. AppAutoAction keeps those targets in one registry, validates them, emits MCP client config, and dispatches dry-run or live JSON envelopes to the right adapter.

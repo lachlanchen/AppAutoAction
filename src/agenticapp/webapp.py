@@ -248,7 +248,8 @@ def chat_update(
         actions.append("Applied a V-SPICE title.")
 
     if any(word in lowered for word in ("vivid", "brighter", "bright", "colorful", "colourful")):
-        updated.setdefault("render", {})["world_color"] = [0.78, 0.80, 0.82]
+        updated.setdefault("render", {})["world_color"] = [0.90, 0.93, 0.96]
+        updated["render"]["exposure"] = 0.08
         updated.setdefault("materials", {}).setdefault("beam", {})["color"] = [1.0, 0.42, 0.08, 0.48]
         updated["materials"]["beam"]["alpha"] = 0.48
         actions.append("Brightened the background and optical beam.")
@@ -529,8 +530,12 @@ def add_optic_element(spec: dict[str, Any], label: str) -> None:
     elements = spec.setdefault("elements", [])
     if any(element.get("label") == label for element in elements):
         return
-    optic_count = sum(1 for element in elements if element.get("type") in {"optic", "lcd_light_valve"})
-    x = -126 + optic_count * 34
+    occupied = [
+        float(element["x"])
+        for element in elements
+        if element.get("type") in {"led_source", "optic", "lcd_light_valve", "event_camera"} and "x" in element
+    ]
+    x = next((slot for slot in [-100, -48, 16, 68, 124] if all(abs(slot - used) >= 24 for used in occupied)), max(occupied or [0]) + 34)
     material = "sample" if label == "Sample" else "glass"
     elements.append({"type": "optic", "name": label.lower().replace(" ", "_"), "x": x, "label": label, "material": material})
 

@@ -17,6 +17,20 @@ class WebAppTests(unittest.TestCase):
         self.assertEqual(result["spec"]["title"], "V-SPICE experiment setup")
         self.assertIn("beam", result["spec"]["materials"])
 
+    def test_chat_update_places_extra_optics_in_open_slots(self):
+        result = chat_update(default_scene_spec(), "Make it a V-SPICE experiment setup, brighter and vivid, add lens and add filter")
+        spec = result["spec"]
+        x_positions = [
+            float(element["x"])
+            for element in spec["elements"]
+            if element.get("type") in {"led_source", "optic", "lcd_light_valve", "event_camera"} and "x" in element
+        ]
+
+        self.assertEqual(spec["render"]["world_color"], [0.90, 0.93, 0.96])
+        self.assertIn("Lens", {element.get("label") for element in spec["elements"]})
+        self.assertIn("Filter", {element.get("label") for element in spec["elements"]})
+        self.assertTrue(all(abs(a - b) >= 24 for index, a in enumerate(x_positions) for b in x_positions[index + 1 :]))
+
     def test_plan_web_scene_is_dry_run(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = plan_web_scene(default_scene_spec(), Path(tmp))

@@ -419,5 +419,7 @@ function setLink(link, url) {
 
 function setRenderBusy(isBusy, label = "Idle") {
   document.getElementById("renderBtn").disabled = isBusy;
-  renderStatus.textContent = label;
+  if (isBusy || label !== "Idle") {
+    renderStatus.textContent = label;
+  }
 }

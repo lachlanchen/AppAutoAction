@@ -111,7 +111,8 @@ button:disabled {
 .app-shell {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   gap: 14px;
   padding: 18px;
 }

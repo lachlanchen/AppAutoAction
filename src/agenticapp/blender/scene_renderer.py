@@ -29,6 +29,7 @@ DEFAULT_MATERIALS = {
     "blue": {"color": [0.05, 0.20, 0.85, 1.0], "roughness": 0.35},
     "text": {"color": [0.01, 0.01, 0.01, 1.0], "roughness": 0.5},
     "white": {"color": [0.92, 0.92, 0.88, 1.0], "roughness": 0.45},
+    "floor": {"color": [0.91, 0.94, 0.97, 1.0], "roughness": 0.62},
 }
 
 
@@ -54,6 +55,9 @@ def render_spec(spec: dict, output_dir: Path) -> None:
     mats = make_materials(spec.get("materials") or {})
     for element in spec.get("elements", []):
         add_element(element, mats)
+    render = spec.get("render", {})
+    if render.get("floor", True):
+        add_studio_floor(mats)
     add_default_lighting()
     configure_camera(spec.get("render", {}).get("camera") or {})
     save_outputs(spec, output_dir)
@@ -244,6 +248,7 @@ def add_box(name: str, location, size, material) -> bpy.types.Object:
     obj.dimensions = size
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     obj.data.materials.append(material)
+    add_bevel(obj, size)
     return obj
 
 
@@ -252,7 +257,21 @@ def add_cylinder(name: str, location, radius: float, depth: float, material, rot
     obj = bpy.context.object
     obj.name = name
     obj.data.materials.append(material)
+    bpy.ops.object.shade_smooth()
     return obj
+
+
+def add_bevel(obj: bpy.types.Object, size) -> None:
+    try:
+        amount = max(0.35, min(float(min(size)) * 0.08, 2.4))
+    except (TypeError, ValueError):
+        amount = 0.7
+    bevel = obj.modifiers.new("soft_edges", "BEVEL")
+    bevel.width = amount
+    bevel.segments = 2
+    bevel.affect = "EDGES"
+    normals = obj.modifiers.new("weighted_normals", "WEIGHTED_NORMAL")
+    normals.keep_sharp = True
 
 
 def add_curve(name: str, points, material, bevel: float) -> bpy.types.Object:
@@ -274,15 +293,25 @@ def add_curve(name: str, points, material, bevel: float) -> bpy.types.Object:
 
 
 def add_default_lighting() -> None:
-    bpy.ops.object.light_add(type="AREA", location=(0, -190, 230))
+    bpy.ops.object.light_add(type="AREA", location=(-70, -210, 260))
     key = bpy.context.object
     key.name = "large_softbox"
-    key.data.energy = 1100
-    key.data.size = 340
+    key.data.energy = 1650
+    key.data.size = 420
+    bpy.ops.object.light_add(type="AREA", location=(230, 120, 160))
+    fill = bpy.context.object
+    fill.name = "cool_fill"
+    fill.data.energy = 260
+    fill.data.size = 260
     bpy.ops.object.light_add(type="SUN", location=(80, -120, 220), rotation=(math.radians(45), 0, math.radians(25)))
     sun = bpy.context.object
     sun.name = "sun_rim"
-    sun.data.energy = 1.4
+    sun.data.energy = 1.15
+
+
+def add_studio_floor(mats) -> None:
+    floor = add_box("studio_floor", [0, 0, -1.2], [620, 300, 1.0], mats["floor"])
+    floor.modifiers.clear()
 
 
 def configure_camera(config: dict) -> None:
@@ -306,15 +335,49 @@ def save_outputs(spec: dict, output_dir: Path) -> None:
     scene.render.resolution_x = int(render.get("width", 1800))
     scene.render.resolution_y = int(render.get("height", 1200))
     scene.render.filepath = str(output_dir / f"{slug}.png")
-    scene.world.color = tuple(render.get("world_color", [0.74, 0.76, 0.78]))
+    configure_world(scene, render.get("world_color", [0.88, 0.91, 0.94]))
     scene.view_settings.view_transform = "Standard"
     scene.view_settings.look = "Medium High Contrast"
+    scene.view_settings.exposure = float(render.get("exposure", 0.05))
+    scene.view_settings.gamma = float(render.get("gamma", 1.0))
     try:
         scene.render.engine = render.get("engine", "BLENDER_EEVEE_NEXT")
     except TypeError:
         scene.render.engine = "BLENDER_EEVEE"
+    configure_render_quality(scene, render)
     bpy.ops.wm.save_as_mainfile(filepath=str(output_dir / f"{slug}.blend"))
     bpy.ops.render.render(write_still=True)
+
+
+def configure_world(scene, color) -> None:
+    if scene.world is None:
+        scene.world = bpy.data.worlds.new("World")
+    rgba = tuple(color if len(color) == 4 else [*color, 1.0])
+    scene.world.color = rgba[:3]
+    scene.world.use_nodes = True
+    background = scene.world.node_tree.nodes.get("Background")
+    if background:
+        background.inputs["Color"].default_value = rgba
+        background.inputs["Strength"].default_value = 0.82
+
+
+def configure_render_quality(scene, render: dict) -> None:
+    scene.render.film_transparent = False
+    scene.render.use_persistent_data = True
+    scene.render.image_settings.color_mode = "RGBA"
+    scene.render.image_settings.compression = 15
+    if not hasattr(scene, "eevee"):
+        return
+    eevee = scene.eevee
+    for name, value in (
+        ("taa_render_samples", int(render.get("samples", 96))),
+        ("use_gtao", True),
+        ("gtao_distance", 4),
+        ("gtao_factor", 1.25),
+        ("use_soft_shadows", True),
+    ):
+        if hasattr(eevee, name):
+            setattr(eevee, name, value)
 
 
 def material_for(element: dict, mats: dict[str, bpy.types.Material], default: str = "black") -> bpy.types.Material:
