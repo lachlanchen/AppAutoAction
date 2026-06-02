@@ -12,6 +12,8 @@ AppAutoAction is a small Python CLI package. Production code lives in `src/agent
 - `PYTHONPATH=src python -m agenticapp dispatch blender "Create a cube" --dry-run`: inspect the JSON envelope for a target.
 - `PYTHONPATH=src python -m agenticapp mcp-config`: emit MCP client configuration.
 - `PYTHONPATH=src python -m unittest discover -s tests`: run the full test suite.
+- `scripts/install_blender_portable.sh`: install a no-sudo Blender binary under `~/.local/share/appautoaction/blender`.
+- `app-auto-action --config configs/blender-local-command.example.json dispatch blender "Draw a building"`: run the local Blender bridge.
 
 ## Coding Style & Naming Conventions
 

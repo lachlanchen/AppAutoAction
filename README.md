@@ -42,6 +42,18 @@ app-auto-action list
 app-auto-action dispatch unity "Create a test scene with three labeled cubes" --dry-run
 ```
 
+## Local Blender Test
+
+For a no-sudo local Blender install and a real headless scene generation test:
+
+```bash
+scripts/install_blender_portable.sh
+app-auto-action --config configs/blender-local-command.example.json doctor
+app-auto-action --config configs/blender-local-command.example.json dispatch blender "Draw a welcoming modern building with a tower"
+```
+
+The command bridge is [bridges/codex_exec_blender.sh](bridges/codex_exec_blender.sh). It reads the AppAutoAction JSON envelope from stdin, runs Blender in background mode, stores Blender logs under `output/blender/`, and returns clean JSON with `.blend` and `.png` artifact paths.
+
 ## Targets
 
 | Target | Current adapter | Best bridge shape | Notes |

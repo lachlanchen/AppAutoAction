@@ -1,0 +1,17 @@
+{
+  "targets": [
+    {
+      "name": "blender",
+      "kind": "blender",
+      "description": "Local Blender command bridge using the Codex exec wrapper.",
+      "transport": {
+        "type": "local_command",
+        "command": ["./bridges/codex_exec_blender.sh"]
+      },
+      "mcp": {
+        "command": "uvx",
+        "args": ["blender-mcp"]
+      }
+    }
+  ]
+}
