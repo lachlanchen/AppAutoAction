@@ -14,6 +14,9 @@ AppAutoAction is a small Python CLI and web package. Production code lives in `s
 - `PYTHONPATH=src python -m agenticapp scene-template experiment-setup`: print a reusable 3D experiment scene spec.
 - `PYTHONPATH=src python -m agenticapp render-scene examples/paper-optics-setup.scene.json --dry-run`: validate a scene spec and output paths.
 - `PYTHONPATH=src python -m agenticapp web --port 8787`: start the local chat, canvas, and preview web app.
+- `PYTHONPATH=src python -m agenticapp webapp start --port 19473`: start the studio in tmux.
+- `PYTHONPATH=src python -m agenticapp studio figure-grid "optical icons 2x3" --rows 2 --cols 3`: run the same artifact action as the web canvas.
+- `PYTHONPATH=src python -m agenticapp studio dispatch blender "Prepare an editable paper figure setup"`: dry-run a configured target and register the envelope as an artifact.
 - `PYTHONPATH=src python -m unittest discover -s tests`: run the full test suite.
 - `scripts/install_blender_portable.sh`: install a no-sudo Blender binary under `~/.local/share/appautoaction/blender`.
 - `app-auto-action --config configs/blender-local-command.example.json dispatch blender "Draw a building"`: run the local Blender bridge.

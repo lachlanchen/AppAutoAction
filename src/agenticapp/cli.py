@@ -3,8 +3,11 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import shlex
 import shutil
+import subprocess
 import sys
+import time
 from typing import Any
 from urllib import request
 
@@ -68,6 +71,56 @@ def build_parser() -> argparse.ArgumentParser:
     web_parser.add_argument("--port", type=int, default=8787, help="Bind port. Uses the next free port if busy.")
     web_parser.add_argument("--open", action="store_true", help="Open the app in the default browser.")
     web_parser.set_defaults(func=cmd_web)
+
+    webapp_parser = subparsers.add_parser("webapp", help="Control the local studio web app in a tmux session.")
+    webapp_parser.add_argument("action", nargs="?", default="status", choices=["start", "stop", "restart", "status"], help="Web app action.")
+    webapp_parser.add_argument("--host", default="127.0.0.1", help="Bind host. Default: 127.0.0.1.")
+    webapp_parser.add_argument("--port", type=int, default=19473, help="Preferred high port for tmux web app. Default: 19473.")
+    webapp_parser.add_argument("--session", default="appautoaction-web", help="tmux session name. Default: appautoaction-web.")
+    webapp_parser.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    webapp_parser.set_defaults(func=cmd_webapp)
+
+    studio_parser = subparsers.add_parser("studio", help="Run paper figure studio actions from the CLI.")
+    studio_subparsers = studio_parser.add_subparsers(dest="studio_command", required=True)
+    studio_common = argparse.ArgumentParser(add_help=False)
+    studio_common.add_argument("--storage-dir", default="output/webapp", help="Artifact storage directory. Default: output/webapp.")
+
+    studio_status = studio_subparsers.add_parser("status", parents=[studio_common], help="Show backend, target, and artifact status.")
+    studio_status.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    studio_status.set_defaults(func=cmd_studio_status)
+
+    studio_artifacts = studio_subparsers.add_parser("artifacts", parents=[studio_common], help="List studio artifacts.")
+    studio_artifacts.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    studio_artifacts.set_defaults(func=cmd_studio_artifacts)
+
+    studio_targets = studio_subparsers.add_parser("targets", parents=[studio_common], help="List configured registry targets.")
+    studio_targets.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    studio_targets.set_defaults(func=cmd_studio_targets)
+
+    studio_settings = studio_subparsers.add_parser("settings", parents=[studio_common], help="Show backend settings and detected status.")
+    studio_settings.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    studio_settings.set_defaults(func=cmd_studio_settings)
+
+    studio_figure = studio_subparsers.add_parser("figure-grid", parents=[studio_common], help="Generate an exact SVG figure grid artifact.")
+    studio_figure.add_argument("prompt", nargs="+", help="Figure prompt.")
+    studio_figure.add_argument("--rows", type=int, help="Grid rows.")
+    studio_figure.add_argument("--cols", type=int, help="Grid columns.")
+    studio_figure.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    studio_figure.set_defaults(func=cmd_studio_figure_grid)
+
+    studio_openscad = studio_subparsers.add_parser("openscad", parents=[studio_common], help="Export a scene spec to OpenSCAD and register the artifact.")
+    studio_openscad.add_argument("spec", help="Path to a scene spec JSON file.")
+    studio_openscad.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    studio_openscad.set_defaults(func=cmd_studio_openscad)
+
+    studio_dispatch = studio_subparsers.add_parser("dispatch", parents=[studio_common], help="Dry-run or send an instruction to a configured target.")
+    studio_dispatch.add_argument("target", help="Target name, such as blender, biorender, unity, or unreal.")
+    studio_dispatch.add_argument("instruction", help="Instruction for the target bridge.")
+    studio_dispatch.add_argument("--payload", default="{}", help="JSON object payload, or @path to read JSON from a file.")
+    studio_dispatch.add_argument("--live", action="store_true", help="Send to the target instead of dry-run.")
+    studio_dispatch.add_argument("--timeout", type=float, default=30, help="Transport timeout in seconds.")
+    studio_dispatch.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    studio_dispatch.set_defaults(func=cmd_studio_dispatch)
     return parser
 
 
@@ -153,6 +206,134 @@ def cmd_web(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_webapp(args: argparse.Namespace) -> int:
+    if args.action in {"stop", "restart"}:
+        stopped = _tmux_stop(args.session)
+        if args.action == "stop":
+            payload = {"ok": True, "action": "stop", "stopped": stopped, "session": args.session}
+            _print_payload(payload, args.json, f"webapp: {'stopped' if stopped else 'not running'}")
+            return 0
+
+    if args.action in {"start", "restart"}:
+        payload = _tmux_start(args.session, args.host, args.port)
+        _print_payload(payload, args.json, f"webapp: {payload.get('url', '')} {payload.get('status', '')}")
+        return 0 if payload.get("ok") else 1
+
+    payload = _tmux_status(args.session)
+    _print_payload(payload, args.json, f"webapp: {payload.get('url', '') or 'not running'} {payload.get('status', '')}")
+    return 0 if payload.get("ok") else 1
+
+
+def cmd_studio_status(args: argparse.Namespace) -> int:
+    from .artifacts import ArtifactStore
+    from .backends import backend_status, load_backend_settings
+    from .webapp import target_list_response
+
+    storage_dir = Path(args.storage_dir)
+    settings = load_backend_settings(storage_dir / "settings.json")
+    artifacts = ArtifactStore(storage_dir).bundle()
+    payload = {
+        "ok": True,
+        "storage_dir": str(storage_dir.resolve()),
+        "artifact_count": len(artifacts["items"]),
+        "selected_artifact_id": artifacts.get("selected_id", ""),
+        "backends": backend_status(settings, Path.cwd()),
+        "targets": target_list_response()["targets"],
+    }
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"storage: {payload['storage_dir']}")
+        print(f"artifacts: {payload['artifact_count']} selected={payload['selected_artifact_id'] or '(none)'}")
+        print(f"aginti: {payload['backends']['aginti']['command_path'] or 'missing'}")
+        print(f"biorender: {payload['backends']['biorender']['mcp_url']}")
+        print("targets: " + ", ".join(target["name"] for target in payload["targets"]))
+    return 0
+
+
+def cmd_studio_artifacts(args: argparse.Namespace) -> int:
+    from .artifacts import ArtifactStore
+
+    payload = ArtifactStore(Path(args.storage_dir)).bundle()
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        rows = [("KIND", "SOURCE", "TITLE", "PATH")]
+        for item in payload["items"]:
+            rows.append((item["kind"], item["source"], item["title"], item["path"]))
+        _print_table(rows)
+    return 0
+
+
+def cmd_studio_targets(args: argparse.Namespace) -> int:
+    from .webapp import target_list_response
+
+    payload = target_list_response()
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        rows = [("NAME", "KIND", "TRANSPORT", "ENABLED")]
+        for target in payload["targets"]:
+            rows.append((target["name"], target["kind"], target["transport"], "yes" if target["enabled"] else "no"))
+        _print_table(rows)
+    return 0
+
+
+def cmd_studio_settings(args: argparse.Namespace) -> int:
+    from .backends import backend_status, load_backend_settings
+
+    settings = load_backend_settings(Path(args.storage_dir) / "settings.json")
+    payload = {"ok": True, "settings": settings, "status": backend_status(settings, Path.cwd())}
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"aginti: {payload['status']['aginti']['command']} -> {payload['status']['aginti']['command_path'] or 'missing'}")
+        print(f"biorender: {payload['status']['biorender']['mcp_url']} env={payload['status']['biorender']['auth_env']}")
+        print("toolchain: " + ", ".join(key for key, enabled in payload["settings"].get("toolchain", {}).items() if enabled))
+    return 0
+
+
+def cmd_studio_figure_grid(args: argparse.Namespace) -> int:
+    from .backends import load_backend_settings
+    from .webapp import generate_web_figure_grid
+
+    storage_dir = Path(args.storage_dir)
+    payload: dict[str, Any] = {"prompt": " ".join(args.prompt)}
+    if args.rows:
+        payload["rows"] = args.rows
+    if args.cols:
+        payload["cols"] = args.cols
+    result = generate_web_figure_grid(payload, storage_dir, load_backend_settings(storage_dir / "settings.json"))
+    _print_payload(result, args.json, f"figure-grid: {result['figure_url']} rows={result['rows']} cols={result['cols']}")
+    return 0 if result.get("ok") else 1
+
+
+def cmd_studio_openscad(args: argparse.Namespace) -> int:
+    from .scene_spec import load_scene_spec
+    from .webapp import export_web_openscad
+
+    result = export_web_openscad(load_scene_spec(args.spec), Path(args.storage_dir))
+    _print_payload(result, args.json, f"openscad: {result['artifact']['url']}")
+    return 0 if result.get("ok") else 1
+
+
+def cmd_studio_dispatch(args: argparse.Namespace) -> int:
+    from .webapp import dispatch_web_target
+
+    result = dispatch_web_target(
+        {
+            "target": args.target,
+            "instruction": args.instruction,
+            "payload": _load_payload(args.payload),
+            "dry_run": not args.live,
+            "timeout": args.timeout,
+        },
+        Path(args.storage_dir),
+    )
+    _print_payload(result, args.json, f"dispatch: {result['dispatch']['target']} {result['dispatch']['status']} -> {result['artifact']['url']}")
+    return 0 if result.get("ok") else 1
+
+
 def _load(args: argparse.Namespace) -> AppConfig:
     return load_config(args.config)
 
@@ -164,6 +345,60 @@ def _load_payload(raw: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("--payload must decode to a JSON object")
     return payload
+
+
+def _print_payload(payload: dict[str, Any], as_json: bool, summary: str) -> None:
+    if as_json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(summary)
+
+
+def _tmux_status(session: str) -> dict[str, Any]:
+    if shutil.which("tmux") is None:
+        return {"ok": False, "status": "missing-tmux", "session": session, "url": ""}
+    check = subprocess.run(["tmux", "has-session", "-t", session], capture_output=True, text=True, check=False)
+    if check.returncode != 0:
+        return {"ok": False, "status": "not-running", "session": session, "url": ""}
+    capture = subprocess.run(["tmux", "capture-pane", "-pt", session], capture_output=True, text=True, check=False)
+    url = _first_url(capture.stdout)
+    return {"ok": True, "status": "running", "session": session, "url": url}
+
+
+def _tmux_start(session: str, host: str, port: int) -> dict[str, Any]:
+    status = _tmux_status(session)
+    if status["ok"]:
+        return status
+    if shutil.which("tmux") is None:
+        return {"ok": False, "status": "missing-tmux", "session": session, "url": ""}
+    command = _webapp_command(host, port)
+    subprocess.run(["tmux", "new-session", "-d", "-s", session, "-c", str(Path.cwd()), command], check=True)
+    time.sleep(0.6)
+    return _tmux_status(session)
+
+
+def _tmux_stop(session: str) -> bool:
+    if shutil.which("tmux") is None:
+        return False
+    check = subprocess.run(["tmux", "has-session", "-t", session], capture_output=True, text=True, check=False)
+    if check.returncode != 0:
+        return False
+    subprocess.run(["tmux", "kill-session", "-t", session], check=False)
+    return True
+
+
+def _webapp_command(host: str, port: int) -> str:
+    command = [sys.executable, "-m", "agenticapp", "web", "--host", host, "--port", str(port)]
+    src_dir = (Path.cwd() / "src").resolve()
+    prefix = f"PYTHONPATH={shlex.quote(str(src_dir))}:${{PYTHONPATH:-}} " if src_dir.is_dir() else ""
+    return prefix + shlex.join(command)
+
+
+def _first_url(text: str) -> str:
+    for chunk in text.split():
+        if chunk.startswith("http://") or chunk.startswith("https://"):
+            return chunk.strip()
+    return ""
 
 
 def _check_target(target: Target, *, probe: bool) -> tuple[bool, str]:

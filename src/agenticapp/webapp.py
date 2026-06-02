@@ -310,6 +310,7 @@ def chat_update(
 
 
 def render_web_scene(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
+    storage_dir = Path(storage_dir).resolve()
     validate_scene_spec(spec)
     spec_dir = storage_dir / "specs"
     output_dir = storage_dir / "renders"
@@ -340,6 +341,7 @@ def render_web_scene(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
 
 
 def plan_web_scene(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
+    storage_dir = Path(storage_dir).resolve()
     validate_scene_spec(spec)
     spec_dir = storage_dir / "specs"
     output_dir = storage_dir / "renders"
@@ -370,6 +372,7 @@ def target_list_response() -> dict[str, Any]:
 
 
 def dispatch_web_target(payload: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
+    storage_dir = Path(storage_dir).resolve()
     target_name = str(payload.get("target") or "").strip()
     instruction = str(payload.get("instruction") or "").strip()
     dry_run = bool(payload.get("dry_run", True))
@@ -397,6 +400,7 @@ def dispatch_web_target(payload: dict[str, Any], storage_dir: Path) -> dict[str,
 
 
 def generate_web_figure_grid(payload: dict[str, Any], storage_dir: Path, settings: dict[str, Any]) -> dict[str, Any]:
+    storage_dir = Path(storage_dir).resolve()
     prompt = str(payload.get("prompt") or "scientific paper figure icons for an experiment setup")
     figure_settings = settings.get("figure", {}) if isinstance(settings.get("figure"), dict) else {}
     default_rows = int(figure_settings.get("rows") or 2)
@@ -451,6 +455,7 @@ def generate_web_figure_grid(payload: dict[str, Any], storage_dir: Path, setting
 
 
 def export_web_openscad(spec: dict[str, Any], storage_dir: Path) -> dict[str, Any]:
+    storage_dir = Path(storage_dir).resolve()
     result = export_scene_to_openscad(spec, storage_dir / "openscad")
     store = ArtifactStore(storage_dir)
     item = store.register(

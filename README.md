@@ -34,6 +34,7 @@ PYTHONPATH=src python -m agenticapp list
 PYTHONPATH=src python -m agenticapp doctor
 PYTHONPATH=src python -m agenticapp dispatch blender "Create a red cube at the origin" --dry-run
 PYTHONPATH=src python -m agenticapp mcp-config
+PYTHONPATH=src python -m agenticapp studio status
 PYTHONPATH=src python -m unittest discover -s tests
 ```
 
@@ -42,6 +43,8 @@ After installation, the console command is also available as:
 ```bash
 app-auto-action list
 app-auto-action dispatch unity "Create a test scene with three labeled cubes" --dry-run
+app-auto-action studio figure-grid "optical device icons 2x3" --rows 2 --cols 3
+app-auto-action webapp start --port 19473
 ```
 
 ## Paper Figure Studio
@@ -61,7 +64,7 @@ The web app now has a bright-by-default theme, chat panel, artifact canvas, scen
 - Toggle Blender, OpenSCAD, AgInTi image generation, BioRender MCP, and target-registry routing settings.
 - Dry-run any configured target from the studio and save the dispatch envelope as a canvas artifact.
 
-Artifacts are tracked under `output/webapp/artifacts.json` and served in the canvas rail. The intended figure architecture is documented in [docs/EDITABLE_FIGURE_PIPELINE.md](docs/EDITABLE_FIGURE_PIPELINE.md). See also [docs/PAPER_FIGURE_STUDIO.md](docs/PAPER_FIGURE_STUDIO.md) and [docs/WEBAPP.md](docs/WEBAPP.md).
+Artifacts are tracked under `output/webapp/artifacts.json` and served in the canvas rail. The intended figure architecture is documented in [docs/EDITABLE_FIGURE_PIPELINE.md](docs/EDITABLE_FIGURE_PIPELINE.md). See also [docs/PAPER_FIGURE_STUDIO.md](docs/PAPER_FIGURE_STUDIO.md), [docs/STUDIO_CLI.md](docs/STUDIO_CLI.md), and [docs/WEBAPP.md](docs/WEBAPP.md).
 
 ## 3D Experiment Design
 

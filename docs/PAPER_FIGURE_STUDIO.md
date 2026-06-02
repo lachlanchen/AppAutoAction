@@ -3,6 +3,7 @@
 The web app turns AppAutoAction into a small studio for academic setup figures. It uses a bright theme by default, with a top-bar toggle for dark mode. The studio combines deterministic layout, 3D rendering, CAD export, and backend handoff without requiring API keys for the local demo.
 
 The long-term figure rule is documented in [EDITABLE_FIGURE_PIPELINE.md](EDITABLE_FIGURE_PIPELINE.md): generate an overview image only as a concept, then turn it into editable atomic parts assembled from source artifacts.
+The matching terminal workflow is documented in [STUDIO_CLI.md](STUDIO_CLI.md).
 
 ## Artifact Canvas
 

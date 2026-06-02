@@ -1,4 +1,5 @@
 import io
+import json
 from contextlib import redirect_stdout
 import tempfile
 from pathlib import Path
@@ -40,6 +41,53 @@ class CliTests(unittest.TestCase):
         output = stdout.getvalue()
         self.assertIn("unity-mcp", output)
         self.assertNotIn("blender-mcp", output)
+
+    def test_studio_targets_json(self):
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            code = main(["studio", "targets", "--json"])
+
+        self.assertEqual(code, 0)
+        payload = json.loads(stdout.getvalue())
+        self.assertIn("blender", [target["name"] for target in payload["targets"]])
+
+    def test_studio_figure_grid_writes_artifact(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stdout = io.StringIO()
+
+            with redirect_stdout(stdout):
+                code = main(["studio", "figure-grid", "optics icons", "--rows", "1", "--cols", "2", "--storage-dir", tmp, "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertTrue(payload["figure_url"].endswith(".svg"))
+        self.assertEqual(payload["rows"], 1)
+        self.assertEqual(payload["cols"], 2)
+
+    def test_studio_dispatch_dry_run_registers_artifact(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stdout = io.StringIO()
+
+            with redirect_stdout(stdout):
+                code = main(
+                    [
+                        "studio",
+                        "dispatch",
+                        "blender",
+                        "Prepare an editable paper figure",
+                        "--storage-dir",
+                        tmp,
+                        "--json",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["dispatch"]["status"], "dry-run")
+        self.assertEqual(payload["artifact"]["kind"], "json")
 
 
 if __name__ == "__main__":

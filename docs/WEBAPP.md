@@ -20,6 +20,7 @@ The app runs on `127.0.0.1` by default. If the requested port is busy, it choose
 The web app uses the same scene spec renderer documented in [SCENE_SPEC.md](SCENE_SPEC.md). It does not require API keys; chat edits are deterministic scene-spec mutations.
 AgInTi image generation defaults to `--dry-run`, which writes a redacted prompt, request payload, and manifest without calling an image provider.
 The editable figure direction is documented in [EDITABLE_FIGURE_PIPELINE.md](EDITABLE_FIGURE_PIPELINE.md): use generated images for overview concepts, keep atomic editable parts, assemble final paper figures with TeX clipping/layering, and expose both overview and editable views in the canvas.
+The matching terminal workflow is documented in [STUDIO_CLI.md](STUDIO_CLI.md). CLI and web actions share the same artifact manifest and backend helpers.
 
 ## Backends
 
@@ -52,3 +53,15 @@ The target dispatch box lists configured AppAutoAction targets and defaults to d
 | `GET /artifacts/...` | Serve generated SVG, PNG, `.blend`, `.scad`, text, and JSON artifacts. |
 
 Generated files are written under `output/webapp/`.
+
+## CLI Parity
+
+The following terminal commands mirror the web app:
+
+```bash
+app-auto-action studio status
+app-auto-action studio figure-grid "optical device icons 2x3" --rows 2 --cols 3
+app-auto-action studio openscad examples/paper-optics-setup.scene.json
+app-auto-action studio dispatch blender "Prepare an editable paper figure setup"
+app-auto-action webapp start --port 19473
+```
