@@ -8,3 +8,4 @@ dist/
 *.egg-info/
 agenticapp.targets.json
 output/
+*.blend1

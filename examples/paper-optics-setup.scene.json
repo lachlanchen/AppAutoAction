@@ -1,0 +1,150 @@
+{
+  "title": "Paper-ready optical experiment setup",
+  "slug": "paper-optics-setup",
+  "description": "Reusable scene spec for optical benches, paper figures, and experiment design notes.",
+  "render": {
+    "width": 1800,
+    "height": 1200,
+    "world_color": [0.74, 0.76, 0.78],
+    "camera": {
+      "type": "ortho",
+      "location": [270, -290, 210],
+      "target": [0, 0, 48],
+      "ortho_scale": 440
+    }
+  },
+  "materials": {
+    "beam": {
+      "color": [1.0, 0.32, 0.05, 0.38],
+      "alpha": 0.38
+    },
+    "sample": {
+      "color": [0.86, 0.55, 0.18, 0.58],
+      "alpha": 0.58
+    }
+  },
+  "elements": [
+    {
+      "type": "baseplate",
+      "name": "breadboard",
+      "size": [420, 180, 8],
+      "holes": true,
+      "hole_spacing": 20
+    },
+    {
+      "type": "rail_pair",
+      "name": "optical rails",
+      "length": 380,
+      "y_offsets": [-18, 18],
+      "z": 13
+    },
+    {
+      "type": "beam",
+      "name": "coded optical path",
+      "start": [-170, 0, 70],
+      "end": [170, 0, 70],
+      "radius": 2.4,
+      "material": "beam"
+    },
+    {
+      "type": "led_source",
+      "name": "broadband LED",
+      "x": -178,
+      "label": "LED"
+    },
+    {
+      "type": "optic",
+      "name": "diffuser",
+      "x": -126,
+      "label": "Diffuser",
+      "material": "diffuser"
+    },
+    {
+      "type": "optic",
+      "name": "input polarizer",
+      "x": -74,
+      "label": "P0 0 deg",
+      "material": "glass"
+    },
+    {
+      "type": "lcd_light_valve",
+      "name": "programmable retarder",
+      "x": -18,
+      "label": "Programmable\nretarder"
+    },
+    {
+      "type": "optic",
+      "name": "sample slide",
+      "x": 42,
+      "label": "Sample",
+      "material": "sample"
+    },
+    {
+      "type": "optic",
+      "name": "analyzer",
+      "x": 94,
+      "label": "Analyzer",
+      "material": "glass"
+    },
+    {
+      "type": "event_camera",
+      "name": "event camera",
+      "x": 178,
+      "label": "Camera"
+    },
+    {
+      "type": "electronics_board",
+      "name": "controller",
+      "location": [-92, 62, 21],
+      "size": [76, 46, 8],
+      "material": "controller",
+      "label": "Controller"
+    },
+    {
+      "type": "electronics_board",
+      "name": "waveform dac",
+      "location": [8, 62, 20],
+      "size": [58, 34, 7],
+      "material": "dac",
+      "label": "DAC / waveform"
+    },
+    {
+      "type": "electronics_board",
+      "name": "analog driver",
+      "location": [84, 62, 20],
+      "size": [58, 34, 7],
+      "material": "driver",
+      "label": "Analog drive"
+    },
+    {
+      "type": "wire",
+      "name": "drive channel a",
+      "points": [[8, 52, 28], [84, 52, 28], [84, 30, 34], [-18, 25, 88]],
+      "material": "red"
+    },
+    {
+      "type": "wire",
+      "name": "drive channel b",
+      "points": [[8, 70, 28], [84, 70, 28], [84, 36, 32], [-18, 25, 52]],
+      "material": "blue"
+    },
+    {
+      "type": "label",
+      "name": "title",
+      "text": "Paper-ready optical experiment setup",
+      "location": [0, -78, 22],
+      "size": 9,
+      "rotation": [75, 0, 0],
+      "material": "white"
+    },
+    {
+      "type": "label",
+      "name": "path summary",
+      "text": "LED -> diffuser -> P0 -> programmable retarder -> sample -> analyzer -> camera",
+      "location": [0, -78, 12],
+      "size": 4.8,
+      "rotation": [75, 0, 0],
+      "material": "white"
+    }
+  ]
+}

@@ -14,6 +14,7 @@
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
+  <a href="#3d-experiment-design">3D Design</a> ·
   <a href="#targets">Targets</a> ·
   <a href="#research-backed-design">Research</a> ·
   <a href="#multilingual">11 Languages</a>
@@ -41,6 +42,22 @@ After installation, the console command is also available as:
 app-auto-action list
 app-auto-action dispatch unity "Create a test scene with three labeled cubes" --dry-run
 ```
+
+## 3D Experiment Design
+
+<p align="center">
+  <img src="examples/renders/paper-optics-setup.png" alt="Paper-ready optical experiment setup render" width="900">
+</p>
+
+AppAutoAction now includes a systematic Blender workflow for paper setup figures, optical benches, device concepts, and experiment design:
+
+```bash
+app-auto-action scene-template experiment-setup --output my-setup.scene.json
+app-auto-action render-scene my-setup.scene.json --dry-run
+app-auto-action render-scene my-setup.scene.json --output-dir output/scenes
+```
+
+The source of truth is a JSON scene spec. Blender runs headless and produces a `.png` preview plus a `.blend` scene. Start from [examples/paper-optics-setup.scene.json](examples/paper-optics-setup.scene.json), inspect the generated [example render](examples/renders/paper-optics-setup.png), or read the schema guide in [docs/SCENE_SPEC.md](docs/SCENE_SPEC.md).
 
 ## Local Blender Test
 

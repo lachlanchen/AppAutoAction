@@ -10,7 +10,9 @@ from urllib import request
 
 from . import __version__
 from .adapters import DispatchError, dispatch_target
+from .blender_render import BlenderRenderError, render_scene_spec
 from .config import AppConfig, Target, load_config
+from .scene_spec import built_in_scene_template
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -18,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return args.func(args)
-    except (DispatchError, ValueError, KeyError, OSError) as exc:
+    except (BlenderRenderError, DispatchError, ValueError, KeyError, OSError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
@@ -47,6 +49,19 @@ def build_parser() -> argparse.ArgumentParser:
     mcp_parser = subparsers.add_parser("mcp-config", help="Emit MCP client configuration for targets with MCP metadata.")
     mcp_parser.add_argument("--only", action="append", default=[], help="Limit output to a target name. Repeatable.")
     mcp_parser.set_defaults(func=cmd_mcp_config)
+
+    template_parser = subparsers.add_parser("scene-template", help="Print or write a reusable 3D scene spec template.")
+    template_parser.add_argument("template", nargs="?", default="experiment-setup", help="Template name. Default: experiment-setup.")
+    template_parser.add_argument("--output", help="Write the JSON template to this path instead of stdout.")
+    template_parser.set_defaults(func=cmd_scene_template)
+
+    render_parser = subparsers.add_parser("render-scene", help="Render a JSON scene spec with Blender.")
+    render_parser.add_argument("spec", help="Path to a scene spec JSON file.")
+    render_parser.add_argument("--output-dir", help="Directory for generated .blend and .png artifacts.")
+    render_parser.add_argument("--blender-bin", help="Path to Blender executable. Defaults to BLENDER_BIN, PATH, or portable install.")
+    render_parser.add_argument("--dry-run", action="store_true", help="Validate and print the render plan without launching Blender.")
+    render_parser.add_argument("--timeout", type=float, default=180, help="Blender timeout in seconds.")
+    render_parser.set_defaults(func=cmd_render_scene)
     return parser
 
 
@@ -97,6 +112,31 @@ def cmd_mcp_config(args: argparse.Namespace) -> int:
         if target.mcp:
             servers[target.name] = target.mcp
     print(json.dumps({"mcpServers": servers}, indent=2, sort_keys=True))
+    return 0
+
+
+def cmd_scene_template(args: argparse.Namespace) -> int:
+    template = built_in_scene_template(args.template)
+    payload = json.dumps(template, indent=2, sort_keys=True)
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(payload + "\n", encoding="utf-8")
+        print(args.output)
+    else:
+        print(payload)
+    return 0
+
+
+def cmd_render_scene(args: argparse.Namespace) -> int:
+    result = render_scene_spec(
+        args.spec,
+        args.output_dir,
+        blender_bin=args.blender_bin,
+        dry_run=args.dry_run,
+        timeout=args.timeout,
+    )
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 
