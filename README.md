@@ -1,3 +1,5 @@
+[English](README.md) · [العربية](i18n/README.ar.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Tiếng Việt](i18n/README.vi.md) · [中文 (简体)](i18n/README.zh-Hans.md) · [中文（繁體）](i18n/README.zh-Hant.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md)
+
 <p align="center">
   <a href="https://lazying.art"><img alt="Homepage" src="https://img.shields.io/badge/home-lazying.art-111827?style=for-the-badge"></a>
   <a href="https://github.com/lachlanchen/AppAutoAction/actions"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/lachlanchen/AppAutoAction/test.yml?branch=master&style=for-the-badge&label=tests"></a>
@@ -18,7 +20,7 @@
   <a href="#3d-experiment-design">3D Design</a> ·
   <a href="#targets">Targets</a> ·
   <a href="#research-backed-design">Research</a> ·
-  <a href="#multilingual">11 Languages</a>
+  <a href="#languages">Languages</a>
 </p>
 
 <p align="center">
@@ -156,21 +158,11 @@ Every dispatch receives the same envelope:
 }
 ```
 
-## Multilingual
+## Languages
 
-| Language | One-line description |
-| --- | --- |
-| English | AppAutoAction routes AI agents to creative and scientific design tools through explicit, reviewable adapters. |
-| 中文 | AppAutoAction 通过清晰可审查的适配器，把 AI 代理连接到创意和科研设计工具。 |
-| 日本語 | AppAutoAction は、確認しやすいアダプターで AI エージェントを制作・科学図解ツールへ接続します。 |
-| 한국어 | AppAutoAction은 검토 가능한 어댑터로 AI 에이전트를 창작 및 과학 설계 도구에 연결합니다. |
-| Español | AppAutoAction conecta agentes de IA con herramientas creativas y científicas mediante adaptadores revisables. |
-| Français | AppAutoAction relie les agents IA aux outils créatifs et scientifiques avec des adaptateurs explicites. |
-| Deutsch | AppAutoAction verbindet KI-Agenten über prüfbare Adapter mit Kreativ- und Wissenschaftswerkzeugen. |
-| Português | AppAutoAction conecta agentes de IA a ferramentas criativas e científicas por adaptadores auditáveis. |
-| Русский | AppAutoAction подключает ИИ-агентов к творческим и научным инструментам через проверяемые адаптеры. |
-| العربية | يربط AppAutoAction وكلاء الذكاء الاصطناعي بأدوات التصميم العلمي والإبداعي عبر محولات قابلة للمراجعة. |
-| हिन्दी | AppAutoAction समीक्षा योग्य एडेप्टरों से AI एजेंटों को रचनात्मक और वैज्ञानिक डिजाइन टूल से जोड़ता है। |
+Localized READMEs live under `i18n/` and use the same profile-style language switcher as this root README:
+
+[العربية](i18n/README.ar.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Tiếng Việt](i18n/README.vi.md) · [中文 (简体)](i18n/README.zh-Hans.md) · [中文（繁體）](i18n/README.zh-Hant.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md)
 
 ## Development
 
