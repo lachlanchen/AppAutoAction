@@ -19,6 +19,7 @@ The app runs on `127.0.0.1` by default. If the requested port is busy, it choose
 
 The web app uses the same scene spec renderer documented in [SCENE_SPEC.md](SCENE_SPEC.md). It does not require API keys; chat edits are deterministic scene-spec mutations.
 AgInTi image generation defaults to `--dry-run`, which writes a redacted prompt, request payload, and manifest without calling an image provider.
+The editable figure direction is documented in [EDITABLE_FIGURE_PIPELINE.md](EDITABLE_FIGURE_PIPELINE.md): use generated images for overview concepts, keep atomic editable parts, assemble final paper figures with TeX clipping/layering, and expose both overview and editable views in the canvas.
 
 ## Backends
 
@@ -26,6 +27,7 @@ AgInTi image generation defaults to `--dry-run`, which writes a redacted prompt,
 - BioRender: configured with the official MCP URL `https://mcp.services.biorender.com/mcp` and an auth environment variable name. The app does not store BioRender secrets.
 - OpenSCAD: exports the current scene spec to a simplified `.scad` mechanical-layout proxy.
 - Blender: renders the scene spec to PNG and `.blend` artifacts.
+- TeX: planned assembly layer for clipping, labels, callouts, and final paper-safe exports.
 - Target registry: the CLI still routes configured targets such as Blender, BioRender, Unity, and Unreal through `agenticapp.targets.json`.
 
 The Backends panel exposes toolchain toggles for Blender, OpenSCAD, AgInTi image generation, BioRender MCP, and the target registry. Toggles are saved as non-secret settings and are intended as routing controls for future workflows; current button actions still run their matching local workflow directly.

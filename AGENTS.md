@@ -28,6 +28,10 @@ Use `unittest` for now. Name test files `test_*.py` and keep tests focused on be
 For scene rendering, test JSON validation and dry-run plans without requiring Blender; use a manual render check when changing `src/agenticapp/blender/scene_renderer.py`.
 For web changes, keep tests focused on API behavior, artifact registration, and static startup; manually verify the browser layout with the local server.
 
+## Figure Pipeline Rules
+
+Paper figure generation must stay editable and atomic. Do not treat a generated bitmap as the final source of truth. Use image generation for overview concepts, then split figures into named parts with their own prompts, source files, tool settings, previews, and edit history. Prefer BioRender for academic assets, OpenSCAD for device geometry, Blender for rendered setups, and TeX for clipping and final assembly. Preserve part IDs and rebuild exports from manifests.
+
 ## Commit & Pull Request Guidelines
 
 Use concise imperative commit messages, such as `Add Unity target validation` or `Document BioRender MCP setup`. Pull requests should include a summary, testing performed, linked issues when applicable, and screenshots only for UI-facing changes.

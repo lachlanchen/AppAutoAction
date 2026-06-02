@@ -52,6 +52,7 @@ app-auto-action web --port 8787 --open
 
 The web app now has a bright-by-default theme, chat panel, artifact canvas, scene editor, and backend settings. It can:
 
+- Treat generated overview images as concepts, then decompose them into editable atomic parts.
 - Generate exact `NxM` SVG paper-figure grids with black panel boundaries.
 - Prepare AgInTi image-generation dry-run payloads for scientific icon concepts.
 - Store BioRender MCP settings without storing secrets.
@@ -60,7 +61,7 @@ The web app now has a bright-by-default theme, chat panel, artifact canvas, scen
 - Toggle Blender, OpenSCAD, AgInTi image generation, BioRender MCP, and target-registry routing settings.
 - Dry-run any configured target from the studio and save the dispatch envelope as a canvas artifact.
 
-Artifacts are tracked under `output/webapp/artifacts.json` and served in the canvas rail. See [docs/PAPER_FIGURE_STUDIO.md](docs/PAPER_FIGURE_STUDIO.md) and [docs/WEBAPP.md](docs/WEBAPP.md).
+Artifacts are tracked under `output/webapp/artifacts.json` and served in the canvas rail. The intended figure architecture is documented in [docs/EDITABLE_FIGURE_PIPELINE.md](docs/EDITABLE_FIGURE_PIPELINE.md). See also [docs/PAPER_FIGURE_STUDIO.md](docs/PAPER_FIGURE_STUDIO.md) and [docs/WEBAPP.md](docs/WEBAPP.md).
 
 ## 3D Experiment Design
 

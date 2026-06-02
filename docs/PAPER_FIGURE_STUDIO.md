@@ -2,9 +2,13 @@
 
 The web app turns AppAutoAction into a small studio for academic setup figures. It uses a bright theme by default, with a top-bar toggle for dark mode. The studio combines deterministic layout, 3D rendering, CAD export, and backend handoff without requiring API keys for the local demo.
 
+The long-term figure rule is documented in [EDITABLE_FIGURE_PIPELINE.md](EDITABLE_FIGURE_PIPELINE.md): generate an overview image only as a concept, then turn it into editable atomic parts assembled from source artifacts.
+
 ## Artifact Canvas
 
 The center panel is the artifact canvas. Every generated file is registered in `output/webapp/artifacts.json` and appears in the selectable rail. Image artifacts preview directly; text, JSON, and OpenSCAD artifacts open in a readable code view.
+
+Future canvas work should show both the whole-figure overview and the editable part graph. The overview should include a top-right minimap for quick navigation between panels and parts; selecting a minimap region should open that part's source, prompt, tool settings, and artifacts.
 
 Current artifact sources:
 
@@ -23,6 +27,8 @@ Generate a 3x4 paper figure grid for cell assay icons
 ```
 
 The grid generator writes an SVG with fixed integer panel boundaries. `rows`, `cols`, `cell_size`, and `border` come from backend settings unless overridden by the request.
+
+Figure grids are only the first deterministic layout layer. A completed paper figure should keep separate editable sources for overview concepts, BioRender assets, image-generated icons, OpenSCAD geometry, Blender renders, and TeX clipping/assembly.
 
 ## AgInTi Backend
 
