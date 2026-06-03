@@ -1,0 +1,56 @@
+{
+  "name": "@lazyingart/app-auto-action",
+  "version": "0.1.0",
+  "description": "Agent routing for Blender, BioRender, Unity, Unreal, and scientific figure tooling.",
+  "type": "commonjs",
+  "bin": {
+    "app-auto-action": "bin/app-auto-action.js",
+    "agenticapp": "bin/agenticapp.js"
+  },
+  "files": [
+    "AGENTS.md",
+    "README.md",
+    "SECURITY.md",
+    "bin/",
+    "bridges/",
+    "configs/",
+    "docs/",
+    "examples/",
+    "i18n/",
+    "scripts/",
+    "src/",
+    "pyproject.toml"
+  ],
+  "scripts": {
+    "check": "node --check bin/app-auto-action.js && node --check bin/agenticapp.js && node --check scripts/npm-publish-from-env.js && node --check src/agenticapp/web/static/app.js",
+    "test": "npm run check && PYTHONPATH=src python -m unittest discover -s tests",
+    "pack:dry-run": "npm pack --dry-run",
+    "publish:env": "node scripts/npm-publish-from-env.js publish --access public",
+    "publish:env:whoami": "node scripts/npm-publish-from-env.js whoami"
+  },
+  "keywords": [
+    "agents",
+    "mcp",
+    "blender",
+    "biorender",
+    "unity",
+    "unreal",
+    "openscad",
+    "scientific-figures",
+    "agintiflow"
+  ],
+  "author": "LazyingArt LLC",
+  "license": "MIT",
+  "homepage": "https://lazying.art",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lachlanchen/AppAutoAction.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lachlanchen/AppAutoAction/issues"
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=9"
+  }
+}

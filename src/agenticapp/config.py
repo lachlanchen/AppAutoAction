@@ -71,7 +71,8 @@ class AppConfig:
 
 
 def default_config_path() -> Path | None:
-    for candidate in (Path("agenticapp.targets.json"), Path("configs/targets.example.json")):
+    package_root = Path(__file__).resolve().parents[2]
+    for candidate in (Path("agenticapp.targets.json"), Path("configs/targets.example.json"), package_root / "configs" / "targets.example.json"):
         if candidate.exists():
             return candidate
     return None

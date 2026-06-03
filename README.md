@@ -39,6 +39,16 @@ It is intentionally small: Python standard library, explicit config, no hidden e
 
 ## Quick Start
 
+Install from npm:
+
+```bash
+npm install -g @lazyingart/app-auto-action
+app-auto-action --version
+app-auto-action webapp start --port 19473
+```
+
+Or run from a source checkout:
+
 ```bash
 PYTHONPATH=src python -m agenticapp list
 PYTHONPATH=src python -m agenticapp doctor
@@ -75,7 +85,7 @@ The web app now has a bright-by-default theme, chat panel, artifact canvas, scen
 - Toggle Blender, OpenSCAD, AgInTi image generation, BioRender MCP, and target-registry routing settings.
 - Dry-run any configured target from the studio and save the dispatch envelope as a canvas artifact.
 
-Artifacts are tracked under `output/webapp/artifacts.json` and served in the canvas rail. The intended figure architecture is documented in [docs/EDITABLE_FIGURE_PIPELINE.md](docs/EDITABLE_FIGURE_PIPELINE.md). See also [docs/PAPER_FIGURE_STUDIO.md](docs/PAPER_FIGURE_STUDIO.md), [docs/STUDIO_CLI.md](docs/STUDIO_CLI.md), and [docs/WEBAPP.md](docs/WEBAPP.md).
+Artifacts are tracked under `output/webapp/artifacts.json` and served in the canvas rail. The intended figure architecture is documented in [docs/EDITABLE_FIGURE_PIPELINE.md](docs/EDITABLE_FIGURE_PIPELINE.md). See also [docs/PAPER_FIGURE_STUDIO.md](docs/PAPER_FIGURE_STUDIO.md), [docs/STUDIO_CLI.md](docs/STUDIO_CLI.md), [docs/WEBAPP.md](docs/WEBAPP.md), and [docs/NPM.md](docs/NPM.md).
 
 ## 3D Experiment Design
 

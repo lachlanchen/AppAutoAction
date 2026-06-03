@@ -389,8 +389,14 @@ def _tmux_stop(session: str) -> bool:
 
 def _webapp_command(host: str, port: int) -> str:
     command = [sys.executable, "-m", "agenticapp", "web", "--host", host, "--port", str(port)]
-    src_dir = (Path.cwd() / "src").resolve()
-    prefix = f"PYTHONPATH={shlex.quote(str(src_dir))}:${{PYTHONPATH:-}} " if src_dir.is_dir() else ""
+    path_parts = []
+    module_src_dir = Path(__file__).resolve().parents[1]
+    if module_src_dir.is_dir():
+        path_parts.append(str(module_src_dir))
+    cwd_src_dir = (Path.cwd() / "src").resolve()
+    if cwd_src_dir.is_dir() and str(cwd_src_dir) not in path_parts:
+        path_parts.append(str(cwd_src_dir))
+    prefix = f"PYTHONPATH={shlex.quote(':'.join(path_parts))}:${{PYTHONPATH:-}} " if path_parts else ""
     return prefix + shlex.join(command)
 
 

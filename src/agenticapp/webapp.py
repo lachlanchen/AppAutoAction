@@ -23,6 +23,7 @@ from .scene_spec import built_in_scene_template, slugify, validate_scene_spec
 
 
 ROOT = Path.cwd()
+PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 STATIC_DIR = Path(__file__).resolve().parent / "web" / "static"
 
 
@@ -89,7 +90,7 @@ class AppAutoActionHandler(BaseHTTPRequestHandler):
         if self.path == "/" or self.path.startswith("/?"):
             self.send_head_for_file(STATIC_DIR / "index.html", "text/html; charset=utf-8")
         elif self.path == "/example-render":
-            self.send_head_for_file(ROOT / "examples" / "renders" / "paper-optics-setup.png", "image/png")
+            self.send_head_for_file(example_path("examples/renders/paper-optics-setup.png"), "image/png")
         else:
             self.send_error(HTTPStatus.NOT_FOUND)
 
@@ -180,7 +181,7 @@ class AppAutoActionHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def send_example_render(self) -> None:
-        path = ROOT / "examples" / "renders" / "paper-optics-setup.png"
+        path = example_path("examples/renders/paper-optics-setup.png")
         if not path.is_file():
             self.send_error(HTTPStatus.NOT_FOUND)
             return
@@ -209,7 +210,7 @@ class AppAutoActionHandler(BaseHTTPRequestHandler):
 
 def default_spec_response() -> dict[str, Any]:
     spec = default_scene_spec()
-    preview = ROOT / "examples" / "renders" / "paper-optics-setup.png"
+    preview = example_path("examples/renders/paper-optics-setup.png")
     preview_url = None
     if preview.exists():
         preview_url = "/example-render"
@@ -217,10 +218,17 @@ def default_spec_response() -> dict[str, Any]:
 
 
 def default_scene_spec() -> dict[str, Any]:
-    example = ROOT / "examples" / "paper-optics-setup.scene.json"
+    example = example_path("examples/paper-optics-setup.scene.json")
     if example.exists():
         return json.loads(example.read_text(encoding="utf-8"))
     return built_in_scene_template("experiment-setup")
+
+
+def example_path(relative: str) -> Path:
+    worktree_path = ROOT / relative
+    if worktree_path.exists():
+        return worktree_path
+    return PACKAGE_ROOT / relative
 
 
 def chat_update(
