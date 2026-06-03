@@ -26,6 +26,23 @@ The package includes the Python source, static web assets, examples, docs, bridg
 
 ## Publish
 
+For the normal local release path, run the release helper from a clean working tree:
+
+```bash
+npm run release:npm:dry-run
+npm run release:npm -- patch
+```
+
+Use `minor`, `major`, or an exact `x.y.z` version instead of `patch` when needed. For example, `npm run release:npm -- minor --dry-run` rehearses a minor release without changing files. The helper verifies npm auth, checks that the target version is not already published, runs tests, performs a dry-run pack, commits `Release vX.Y.Z`, tags `vX.Y.Z`, publishes to npm, verifies a temp-prefix install, then pushes the commit and tag.
+
+If npm web/2FA approval times out after the release commit and tag are created, approve a fresh prompt and finish the same version with:
+
+```bash
+npm run publish:npm:current
+```
+
+Use `-- --no-push` when you want to publish but push the release commit/tag manually afterward.
+
 Prefer GitHub Actions trusted publishing once npm trust is configured for this repository. The workflow is `.github/workflows/npm-publish.yml` and publishes with provenance.
 
 Trusted Publisher settings on npm:

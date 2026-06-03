@@ -5,6 +5,10 @@ on:
     types: [published]
   workflow_dispatch:
 
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
   id-token: write
@@ -30,7 +34,7 @@ jobs:
 
       - name: Use npm with OIDC support
         run: |
-          npm install -g npm@^11.5.1
+          npm install -g npm@^11.10.0
           npm --version
 
       - name: Verify package
@@ -38,5 +42,28 @@ jobs:
           npm test
           npm pack --dry-run
 
+      - name: Check npm version availability
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          if npm view "$NAME@$VERSION" version --json >/tmp/npm-version.json 2>/tmp/npm-version.err; then
+            echo "$NAME@$VERSION already exists on npm."
+            cat /tmp/npm-version.json
+            exit 1
+          fi
+          if ! grep -q E404 /tmp/npm-version.err; then
+            cat /tmp/npm-version.err
+            exit 1
+          fi
+
       - name: Publish to npm
         run: npm publish --access public --provenance
+
+      - name: Verify registry install
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          TMP_PREFIX="$(mktemp -d)"
+          npm install --prefix "$TMP_PREFIX" -g "$NAME@$VERSION"
+          "$TMP_PREFIX/bin/app-auto-action" --version
+          "$TMP_PREFIX/bin/agenticapp" --version
