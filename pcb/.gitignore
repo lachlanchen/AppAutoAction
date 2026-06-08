@@ -1,0 +1,10 @@
+# Local imported PCB archives and extracted references.
+*.zip
+*.kicad_prl
+fp-info-cache
+.DS_Store
+__MACOSX/
+
+# Reference dumps kept locally for inspection, not part of AppAutoAction source.
+DualLED_GONGJUNHAO/
+nhi-pcb/

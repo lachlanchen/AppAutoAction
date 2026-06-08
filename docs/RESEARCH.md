@@ -4,6 +4,8 @@ Research date: 2026-06-02
 
 This brief summarizes the current GitHub and vendor landscape for agent-controlled Blender, BioRender, Unity, and Unreal workflows. The goal is to justify AppAutoAction's registry-plus-adapter design instead of binding the project to one editor plugin.
 
+Related hardware roadmap: [Hybrid Electron-Microscopy Sensor Roadmap](HYBRID_EM_SENSOR_ROADMAP.md).
+
 ## Executive Summary
 
 MCP has become the common integration shape for AI agents that need external capabilities. Official MCP documentation describes servers as exposing tools, resources, and prompts; tools are schema-defined operations that models can call, while resources and prompts provide context and reusable workflows. That maps well to editor automation, where an agent needs both read access to scene/project state and explicit write tools.
