@@ -1,5 +1,5 @@
-*.blend binary
-*.dxf -diff
-*.pdf binary
-*.step -diff
-*.stl -diff
+*.blend binary -whitespace
+*.dxf -diff -whitespace
+*.pdf binary -whitespace
+*.step -diff -whitespace
+*.stl -diff -whitespace

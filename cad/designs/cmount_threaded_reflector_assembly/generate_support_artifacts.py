@@ -15,20 +15,24 @@ ARTIFACTS = ROOT / "artifacts"
 TUBE_TOTAL = 50.0
 THREAD_LEN = 20.0
 BODY_LEN = 10.0
-BODY_D = 26.0
+BODY_D = 28.0
 MALE_D = 24.4
 BORE_D = 20.0
-AXIS_Z = 13.0
+AXIS_Z = 14.0
 
-WALL = 3.0
+WALL = 4.0
 INNER = 20.0
-HOLDER_SOCKET = 22.0
-HOLDER_BOX_X = 23.0
-HOLDER_Y = 26.0
-HOLDER_Z = 23.0
-SOCKET_OD = 32.0
-FEMALE_MINOR = 23.6
+HOLDER_SOCKET = 24.0
+HOLDER_BOX_X = 24.0
+HOLDER_Y = 28.0
+HOLDER_Z = 24.0
+SOCKET_OD = 34.0
+FEMALE_MINOR = 23.8
 ASSEMBLY_HOLDER_X = TUBE_TOTAL - THREAD_LEN
+THREAD_PITCH = 25.4 / 32.0
+THREAD_DEPTH = 0.42
+THREAD_TOOTH_W = THREAD_PITCH * 0.55
+FEMALE_THREAD_CUTTER_D = 24.8
 
 
 def x_cylinder(d: float, length: float, x0: float) -> cq.Workplane:
@@ -41,6 +45,31 @@ def box(x0: float, y0: float, z0: float, dx: float, dy: float, dz: float) -> cq.
 
 def centered_y_box(x0: float, z0: float, dx: float, dy: float, dz: float) -> cq.Workplane:
     return cq.Workplane("XY").box(dx, dy, dz, centered=(False, True, False)).translate((x0, 0, z0))
+
+
+def x_clip_box(x0: float, length: float, y_span: float, z0: float, height: float) -> cq.Workplane:
+    return cq.Workplane("XY").box(length, y_span, height, centered=(False, True, False)).translate((x0, 0, z0))
+
+
+def external_thread_brep(x0: float, length: float, major_d: float, lefthand: bool = False) -> cq.Workplane:
+    root_r = major_d / 2 - THREAD_DEPTH
+    path = cq.Wire.makeHelix(
+        THREAD_PITCH,
+        length,
+        root_r,
+        center=(x0, 0, AXIS_Z),
+        dir=(1, 0, 0),
+        lefthand=lefthand,
+    )
+    profile = (
+        cq.Workplane("XY")
+        .workplane(offset=AXIS_Z)
+        .center(x0, root_r)
+        .polyline([(0, 0), (THREAD_TOOTH_W / 2, THREAD_DEPTH), (THREAD_TOOTH_W, 0)])
+        .close()
+    )
+    thread = profile.sweep(path, isFrenet=True, combine=False)
+    return thread.intersect(x_clip_box(x0, length, major_d + 3, AXIS_Z - major_d / 2 - 2, major_d + 4))
 
 
 def tube_envelope() -> cq.Workplane:
@@ -68,6 +97,39 @@ def holder_envelope(x0: float = 0) -> cq.Workplane:
     return holder.cut(x_cylinder(FEMALE_MINOR, HOLDER_SOCKET + 1, socket_left - 0.5))
 
 
+def threaded_tube() -> cq.Workplane:
+    root_d = MALE_D - 2 * THREAD_DEPTH + 0.24
+    right_x = THREAD_LEN + BODY_LEN
+    tube = (
+        x_cylinder(root_d, THREAD_LEN + 0.2, 0)
+        .union(x_cylinder(BODY_D, BODY_LEN + 0.4, THREAD_LEN - 0.2))
+        .union(x_cylinder(root_d, THREAD_LEN + 0.2, right_x - 0.2))
+        .union(external_thread_brep(0, THREAD_LEN, MALE_D, lefthand=False))
+        .union(external_thread_brep(right_x, THREAD_LEN, MALE_D, lefthand=True))
+    )
+    return tube.cut(x_cylinder(BORE_D, TUBE_TOTAL + 2, -1))
+
+
+def threaded_holder(x0: float = 0) -> cq.Workplane:
+    socket_left = x0
+    box_left = x0 + HOLDER_SOCKET
+    bottom = centered_y_box(box_left, 0, HOLDER_BOX_X, HOLDER_Y, WALL)
+    side_a = box(box_left, -HOLDER_Y / 2, WALL, HOLDER_BOX_X, WALL, INNER)
+    side_b = box(box_left, HOLDER_Y / 2 - WALL, WALL, HOLDER_BOX_X, WALL, INNER)
+    right = box(box_left + INNER, -HOLDER_Y / 2, WALL, WALL, HOLDER_Y, INNER)
+
+    socket = x_cylinder(SOCKET_OD, HOLDER_SOCKET, socket_left)
+    clip = box(socket_left - 0.1, -SOCKET_OD / 2 - 0.5, 0, HOLDER_SOCKET + 0.2, SOCKET_OD + 1, SOCKET_OD)
+    socket = socket.intersect(clip)
+    reinforce = centered_y_box(socket_left, 0, HOLDER_SOCKET + WALL, HOLDER_Y, WALL)
+
+    holder = bottom.union(side_a).union(side_b).union(right).union(socket).union(reinforce)
+    cutter = x_cylinder(FEMALE_MINOR, HOLDER_SOCKET + 1, socket_left - 0.5).union(
+        external_thread_brep(socket_left - 0.5, HOLDER_SOCKET + 1, FEMALE_THREAD_CUTTER_D, lefthand=True)
+    )
+    return holder.cut(cutter)
+
+
 def export_steps() -> None:
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     tube = tube_envelope()
@@ -79,6 +141,15 @@ def export_steps() -> None:
     assembly.add(tube, name="male_male_cmount_tube")
     assembly.add(holder_envelope(ASSEMBLY_HOLDER_X), name="top_open_reflector_holder")
     assembly.save(str(ARTIFACTS / "threaded_reflector_assembly_envelope.step"))
+
+    threaded_tube_part = threaded_tube()
+    threaded_holder_part = threaded_holder(0)
+    cq.exporters.export(threaded_tube_part, str(ARTIFACTS / "male_male_cmount_tube_threaded.step"))
+    cq.exporters.export(threaded_holder_part, str(ARTIFACTS / "top_open_reflector_holder_threaded.step"))
+    threaded_assembly = cq.Assembly(name="threaded_reflector_assembly_with_modeled_threads")
+    threaded_assembly.add(threaded_tube_part, name="male_male_cmount_tube_threaded")
+    threaded_assembly.add(threaded_holder(ASSEMBLY_HOLDER_X), name="top_open_reflector_holder_female_threaded")
+    threaded_assembly.save(str(ARTIFACTS / "threaded_reflector_assembly_threaded.step"))
 
 
 def svg_header(width: int, height: int) -> list[str]:

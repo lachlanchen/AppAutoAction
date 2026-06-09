@@ -20,7 +20,7 @@ These raw zip and STEP dumps are intentionally ignored by git. Keep them local u
 ## Designs
 
 - `designs/cmount_reflector_adapter/`: printable C-mount male to reflector-cube adapter draft. One end uses a printer-compensated external C-mount-like thread; the other end is a 20 x 20 x 20 mm internal reflector chamber with 3 mm walls.
-- `designs/cmount_threaded_reflector_assembly/`: newer two-part design with a 50 mm male-male C-mount tube, 20 mm threads on each end, and a top-open 20 x 20 x 20 mm reflector holder with a female threaded left socket.
+- `designs/cmount_threaded_reflector_assembly/`: newer two-part design with a 50 mm male-male C-mount tube, 20 mm threads on each end, 28 mm thick center body, and a top-open 20 x 20 x 20 mm reflector holder with a female threaded left socket.
 
 ## Research Notes
 

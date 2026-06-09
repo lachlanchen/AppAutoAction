@@ -10,9 +10,11 @@ ARTIFACTS = ROOT / "artifacts"
 TUBE_STL = ARTIFACTS / "male_male_cmount_tube.stl"
 HOLDER_STL = ARTIFACTS / "top_open_reflector_holder.stl"
 PNG = ARTIFACTS / "threaded_reflector_assembly_render.png"
+EXPLODED_PNG = ARTIFACTS / "threaded_reflector_exploded_thread_detail.png"
 BLEND = ARTIFACTS / "threaded_reflector_assembly.blend"
 
 HOLDER_X = 30.0
+EXPLODED_HOLDER_X = 64.0
 
 
 def clear_scene() -> None:
@@ -44,11 +46,11 @@ def look_at(camera, target: Vector) -> None:
     camera.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
 
 
-def main() -> None:
+def setup_scene(holder_x: float, center: Vector, ortho_scale: float):
     clear_scene()
     tube = import_stl(TUBE_STL, "50 mm male-male C-mount tube")
     holder = import_stl(HOLDER_STL, "top-open reflector holder")
-    holder.location.x = HOLDER_X
+    holder.location.x = holder_x
 
     tube.data.materials.append(material("printed blue tube", (0.12, 0.62, 1.0, 1)))
     holder.data.materials.append(material("printed green holder", (0.24, 0.92, 0.52, 1)))
@@ -70,12 +72,11 @@ def main() -> None:
     fill.data.energy = 650
     fill.data.size = 11
 
-    center = Vector((39, 0, 13))
-    bpy.ops.object.camera_add(location=(98, -92, 84))
+    bpy.ops.object.camera_add(location=(center.x + 64, -92, 86))
     camera = bpy.context.object
     look_at(camera, center)
     camera.data.type = "ORTHO"
-    camera.data.ortho_scale = 92
+    camera.data.ortho_scale = ortho_scale
     bpy.context.scene.camera = camera
 
     bpy.context.scene.render.engine = "BLENDER_EEVEE"
@@ -88,10 +89,20 @@ def main() -> None:
     bpy.context.scene.render.resolution_y = 1200
     bpy.context.scene.world.color = (0.98, 0.99, 1.0)
 
-    bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
-    bpy.context.scene.render.filepath = str(PNG)
+
+def render_to(path: Path) -> None:
+    bpy.context.scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
-    print(f"Rendered {PNG}")
+    print(f"Rendered {path}")
+
+
+def main() -> None:
+    setup_scene(HOLDER_X, Vector((40, 0, 14)), 96)
+    bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
+    render_to(PNG)
+
+    setup_scene(EXPLODED_HOLDER_X, Vector((57, 0, 14)), 122)
+    render_to(EXPLODED_PNG)
 
 
 if __name__ == "__main__":

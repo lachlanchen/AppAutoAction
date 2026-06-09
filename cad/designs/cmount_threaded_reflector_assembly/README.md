@@ -4,6 +4,8 @@ This is a new two-part design. It does not replace `../cmount_reflector_adapter/
 
 ![Threaded C-mount tube and top-open reflector holder](artifacts/threaded_reflector_assembly_render.png)
 
+![Exploded view showing the male thread ridges and holder socket](artifacts/threaded_reflector_exploded_thread_detail.png)
+
 ## Design Intent
 
 From left to right:
@@ -39,6 +41,10 @@ Imported bounding boxes for the old A/B/C STEP branches:
 
 The new tube therefore uses `24.4 mm` printed male major diameter for the old camera/C-mount side, with standard C-mount pitch `25.4 / 32 = 0.79375 mm`. The reflector holder's female socket uses a `24.8 mm` thread cutter, matching the old `Thread left 24.8` / `Cap thread 24.8` print-clearance pattern.
 
+## Why The Earlier Render Looked Smooth
+
+The first render showed the assembly already threaded together. That hides the right male thread inside the holder, and the female groove is inside the socket. The first STEP files were also smooth envelope STEP files for CAD review, not fully threaded BReps. The current artifacts include `threaded_reflector_assembly_threaded.step`, a single STEP assembly with explicit male thread ridges and female groove-cut geometry.
+
 ## Dimensions
 
 | Feature | Value |
@@ -48,16 +54,17 @@ The new tube therefore uses `24.4 mm` printed male major diameter for the old ca
 | Center body length | `10 mm` |
 | Right male thread length | `20 mm` |
 | Tube bore | `20 mm` |
-| Tube body OD | `26 mm` |
+| Tube body OD | `28 mm` |
 | Printed male thread major OD | `24.4 mm` |
 | Holder female thread cutter OD | `24.8 mm` |
 | Thread pitch | `0.79375 mm` |
 | Reflector inner pocket | `20 x 20 x 20 mm` |
-| Holder wall | `3 mm` |
+| Holder wall | `4 mm` |
 | Holder top | open |
 | Holder left side | open through threaded socket |
+| Optical axis height | `14 mm` |
 
-Both male threads are modeled right-hand when viewed from their engaging end. The right-end thread is mirrored so it mates naturally with the left-facing female socket on the holder.
+The holder wall is thicker than the requested minimum. This makes the tube center body `28 mm` OD around the `20 mm` bore, giving a `4 mm` tube wall and placing the center body bottom exactly on the same `Z=0` plane as the reflector holder bottom when installed. Both male threads are modeled right-hand when viewed from their engaging end. The right-end thread is mirrored so it mates naturally with the left-facing female socket on the holder.
 
 ## Files
 
@@ -67,7 +74,9 @@ Both male threads are modeled right-hand when viewed from their engaging end. Th
 - `artifacts/male_male_cmount_tube.stl`: printable threaded tube.
 - `artifacts/top_open_reflector_holder.stl`: printable reflector holder.
 - `artifacts/threaded_reflector_assembly.stl`: assembly preview only.
-- `artifacts/*.step`: STEP envelope files for CAD review.
+- `artifacts/threaded_reflector_assembly_threaded.step`: single STEP assembly containing both parts with modeled thread geometry.
+- `artifacts/*_threaded.step`: individual threaded STEP parts.
+- `artifacts/*_envelope.step`: smooth STEP envelope files for lightweight CAD review.
 - `artifacts/*.svg`, `*.pdf`, `*.png`, `*.dxf`: support drawings.
 
 DWG is not generated because it is proprietary; use the DXF sketch for CAD import.

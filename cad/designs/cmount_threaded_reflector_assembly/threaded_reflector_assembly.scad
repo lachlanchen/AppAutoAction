@@ -19,21 +19,21 @@ join_overlap = 0.2;
 tube_total_length = 50;
 tube_thread_length = 20;
 tube_body_length = tube_total_length - 2 * tube_thread_length; // 10 mm.
-tube_body_d = 26;
+tube_body_d = 28;
 bore_d = 20;
 
 reflector_inner = 20;
-wall = 3;
+wall = 4;
 holder_box_inner_x = 20;
 holder_box_outer_x = holder_box_inner_x + wall; // left side is open.
 holder_box_outer_y = reflector_inner + 2 * wall;
 holder_box_outer_z = reflector_inner + wall; // top is open.
 
-holder_socket_length = 22;
-holder_socket_outer_d = 32;
-holder_female_minor_d = 23.6;
+holder_socket_length = 24;
+holder_socket_outer_d = 34;
+holder_female_minor_d = 23.8;
 
-axis_z = wall + reflector_inner / 2; // 13 mm.
+axis_z = wall + reflector_inner / 2; // 14 mm with the current 4 mm holder wall.
 clearance = 0.05;
 
 module cube_at(x0, y0, z0, dx, dy, dz) {
