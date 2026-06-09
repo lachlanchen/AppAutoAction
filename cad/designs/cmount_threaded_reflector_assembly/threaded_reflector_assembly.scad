@@ -6,34 +6,39 @@ $fn = 128;
 part = "assembly"; // tube | holder | assembly | exploded
 
 // Old 4f design print-fit evidence:
-// - Thread camera 24.4 in OpenHI B/C and Nature BS lateral.
-// - Thread left 24.8 / Cap thread 24.8 in collimator parts.
+// - Thread camera 24.4 in OpenHI B/C is the printed male root/fit diameter.
+// - Thread left 24.8 / Cap thread 24.8 are matching female cutter diameters.
+// - The old swept triangle is 0.4 mm high with a 0.8 mm base and 0.8 mm pitch.
 nominal_cmount_major_d = 25.4;
-printed_male_major_d = 24.4;
-holder_female_thread_cutter_d = 24.8;
-thread_pitch = 25.4 / 32; // 0.79375 mm, C-mount 32 TPI reference.
-thread_depth = 0.42;
-thread_overlap = 0.12;
+printed_male_root_d = 24.4;
+holder_female_root_d = 24.8;
+thread_pitch = 0.8;
+thread_height = 0.4;
+thread_tooth_w = 0.8;
+thread_overlap = 0.08;
 join_overlap = 0.2;
 
 tube_total_length = 50;
-tube_thread_length = 20;
-tube_body_length = tube_total_length - 2 * tube_thread_length; // 10 mm.
-tube_body_d = 28;
+tube_thread_length = 15;
+tube_body_length = tube_total_length - 2 * tube_thread_length; // 20 mm.
 bore_d = 20;
 
-reflector_inner = 20;
+reflector_nominal = 20;
+reflector_clearance = 0.4;
+reflector_inner = reflector_nominal + reflector_clearance;
 wall = 4;
-holder_box_inner_x = 20;
+holder_box_inner_x = reflector_inner;
 holder_box_outer_x = holder_box_inner_x + wall; // left side is open.
 holder_box_outer_y = reflector_inner + 2 * wall;
 holder_box_outer_z = reflector_inner + wall; // top is open.
 
 holder_socket_length = 24;
+holder_female_thread_length = 20;
 holder_socket_outer_d = 34;
-holder_female_minor_d = 23.8;
+holder_female_bore_d = holder_female_root_d;
 
-axis_z = wall + reflector_inner / 2; // 14 mm with the current 4 mm holder wall.
+axis_z = wall + reflector_inner / 2; // 14.2 mm with the current 4 mm holder wall.
+tube_body_d = 2 * axis_z; // Keeps the center body bottom flush with the holder bottom.
 clearance = 0.05;
 
 module cube_at(x0, y0, z0, dx, dy, dz) {
@@ -53,10 +58,9 @@ module clipped_x_cylinder(d, h, x0, z_min, z_max) {
     }
 }
 
-module external_thread_core_x(length, major_d, pitch, depth, overlap) {
+module external_thread_core_x(length, root_d, pitch, height, tooth_w) {
     turns = length / pitch;
-    tooth_w = pitch * 0.55;
-    root_r = major_d / 2 - depth - overlap;
+    root_r = root_d / 2 - thread_overlap;
 
     translate([0, 0, axis_z])
         rotate([0, 90, 0])
@@ -69,27 +73,27 @@ module external_thread_core_x(length, major_d, pitch, depth, overlap) {
                 translate([root_r, 0])
                     polygon(points = [
                         [0, -tooth_w / 2],
-                        [depth + overlap, 0],
+                        [height + thread_overlap, 0],
                         [0, tooth_w / 2]
                     ]);
 }
 
-module external_thread_x(x0, length, major_d, viewed_from_right=false) {
+module external_thread_x(x0, length, root_d, viewed_from_right=false) {
     if (viewed_from_right) {
         // Mirror so the right end is right-hand when viewed from its engaging face.
         translate([x0 + length, 0, 0])
             mirror([1, 0, 0])
-                external_thread_core_x(length, major_d, thread_pitch, thread_depth, thread_overlap);
+                external_thread_core_x(length, root_d, thread_pitch, thread_height, thread_tooth_w);
     } else {
         translate([x0, 0, 0])
-            external_thread_core_x(length, major_d, thread_pitch, thread_depth, thread_overlap);
+            external_thread_core_x(length, root_d, thread_pitch, thread_height, thread_tooth_w);
     }
 }
 
 module threaded_bore_cutter_x(x0, length) {
     union() {
-        x_cylinder(holder_female_minor_d + clearance, length, x0);
-        external_thread_x(x0, length, holder_female_thread_cutter_d, false);
+        x_cylinder(holder_female_bore_d + clearance, length, x0);
+        external_thread_x(x0, holder_female_thread_length, holder_female_root_d, false);
     }
 }
 
@@ -99,11 +103,11 @@ module male_male_tube() {
     difference() {
         union() {
             x_cylinder(
-                printed_male_major_d - 2 * thread_depth + 2 * thread_overlap,
+                printed_male_root_d,
                 tube_thread_length + join_overlap,
                 0
             );
-            external_thread_x(0, tube_thread_length, printed_male_major_d, false);
+            external_thread_x(0, tube_thread_length, printed_male_root_d, false);
 
             x_cylinder(
                 tube_body_d,
@@ -112,11 +116,11 @@ module male_male_tube() {
             );
 
             x_cylinder(
-                printed_male_major_d - 2 * thread_depth + 2 * thread_overlap,
+                printed_male_root_d,
                 tube_thread_length + join_overlap,
                 right_thread_x - join_overlap
             );
-            external_thread_x(right_thread_x, tube_thread_length, printed_male_major_d, true);
+            external_thread_x(right_thread_x, tube_thread_length, printed_male_root_d, true);
         }
 
         x_cylinder(bore_d + clearance, tube_total_length + 2, -1);

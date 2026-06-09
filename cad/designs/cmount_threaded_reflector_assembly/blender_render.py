@@ -6,15 +6,15 @@ import bpy
 
 
 ROOT = Path(__file__).resolve().parent
-ARTIFACTS = ROOT / "artifacts"
+ARTIFACTS = ROOT / "artifacts" / "v2_15mm_threads_print_fit"
 TUBE_STL = ARTIFACTS / "male_male_cmount_tube.stl"
 HOLDER_STL = ARTIFACTS / "top_open_reflector_holder.stl"
 PNG = ARTIFACTS / "threaded_reflector_assembly_render.png"
 EXPLODED_PNG = ARTIFACTS / "threaded_reflector_exploded_thread_detail.png"
 BLEND = ARTIFACTS / "threaded_reflector_assembly.blend"
 
-HOLDER_X = 30.0
-EXPLODED_HOLDER_X = 64.0
+HOLDER_X = 35.0
+EXPLODED_HOLDER_X = 69.0
 
 
 def clear_scene() -> None:
@@ -97,11 +97,11 @@ def render_to(path: Path) -> None:
 
 
 def main() -> None:
-    setup_scene(HOLDER_X, Vector((40, 0, 14)), 96)
+    setup_scene(HOLDER_X, Vector((42, 0, 14.2)), 100)
     bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
     render_to(PNG)
 
-    setup_scene(EXPLODED_HOLDER_X, Vector((57, 0, 14)), 122)
+    setup_scene(EXPLODED_HOLDER_X, Vector((61, 0, 14.2)), 128)
     render_to(EXPLODED_PNG)
 
 

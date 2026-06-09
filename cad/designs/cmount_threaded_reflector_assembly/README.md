@@ -2,25 +2,34 @@
 
 This is a new two-part design. It does not replace `../cmount_reflector_adapter/`.
 
-![Threaded C-mount tube and top-open reflector holder](artifacts/threaded_reflector_assembly_render.png)
+Current printable version: `artifacts/v2_15mm_threads_print_fit/`.
 
-![Exploded view showing the male thread ridges and holder socket](artifacts/threaded_reflector_exploded_thread_detail.png)
+![Threaded C-mount tube and top-open reflector holder](artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_render.png)
+
+![Exploded view showing the male thread ridges and holder socket](artifacts/v2_15mm_threads_print_fit/threaded_reflector_exploded_thread_detail.png)
+
+## Artifact Versions
+
+| Version | Folder | Summary |
+| --- | --- | --- |
+| v1 | `artifacts/v1_20mm_threads/` | Previous 50 mm tube with `20 mm` threads at both ends, `10 mm` center body, `20 x 20 x 20 mm` reflector pocket, and earlier C-mount pitch assumption. |
+| v2 | `artifacts/v2_15mm_threads_print_fit/` | Current design: `15 mm` male threads on both ends, `20 mm` center body, max `20 mm` internal female thread, `20.4 x 20.4 x 20.4 mm` reflector pocket, and old-reference print-fit diameters. |
 
 ## Design Intent
 
 From left to right:
 
 1. A `50 mm` tube with male C-mount-like threads on both ends.
-2. Each threaded section is `20 mm` long.
-3. The center tube body is `10 mm` long.
+2. Each male threaded section is `15 mm` long.
+3. The center tube body is `20 mm` long.
 4. The tube left end mates to the old 4f system female C-mount side.
 5. The tube right end threads into the reflector holder's female socket.
-6. The reflector holder is a top-open box for a `20 x 20 x 20 mm` reflector.
+6. The reflector holder is a top-open box for a nominal `20 x 20 x 20 mm` reflector with `0.4 mm` total pocket clearance.
 7. From the reflector view, the holder is top-open and left-open through the threaded tube socket.
 
 ## Old 4f Design Evidence
 
-The local OpenHI/Nature STEP files use millimetre units. The exact thread labels found in the old branch files are:
+The local OpenHI/Nature STEP files use millimetre units. OpenHI has the cleanest one-part measurements; Nature repeats the same labels inside larger assemblies. The exact thread labels found in the old branch files are:
 
 | Old file | STEP solid labels |
 | --- | --- |
@@ -31,15 +40,16 @@ The local OpenHI/Nature STEP files use millimetre units. The exact thread labels
 | `OpenHI_STEP/Collimator cap.step` | `Cap thread 24.8` |
 | `Nature_STEP/BS lateral.step.step` | repeated `Thread camera 24.4`, `Thread lens 29.6`, `Thread top`, `Thread BS` |
 
-Imported bounding boxes for the old A/B/C STEP branches:
+Measured OpenHI mating/thread bodies:
 
-| Old branch | Bounding box |
-| --- | --- |
-| `A.step` | `40 x 40 x 50 mm` |
-| `B.step` | `40 x 40 x 54.4 mm` |
-| `C.step` | `54 x 40 x 40 mm` |
+| Fit role | Old evidence | Measured body envelope | v2 rule |
+| --- | --- | ---: | --- |
+| Camera/C-mount male root | `Thread camera 24.4` in B/C | about `25.2 x 25.4 x 5.1 mm` thread envelope | use `24.4 mm` male root, `25.2 mm` crest |
+| Matching female/cutter root | `Thread left 24.8`, `Cap thread 24.8` | about `25.6 x 25.4 x 5.8 mm` thread envelope | use `24.8 mm` female bore/root, `25.6 mm` groove cutter crest |
+| Larger lens/BS/top thread | `Thread lens 29.6`, `Thread top`, `Thread BS`, `Outer thread` | about `30.6 x 30.9 mm` crest envelope | keep `29.6 mm` root when adapting old 4f parts |
+| Square branch bodies | `Lens B/C camera`, `Scope fittings`, `T branch head` | exact `40 x 40 mm` cross sections | keep inserted part exact; add clearance to receiving pockets |
 
-The new tube therefore uses `24.4 mm` printed male major diameter for the old camera/C-mount side, with standard C-mount pitch `25.4 / 32 = 0.79375 mm`. The reflector holder's female socket uses a `24.8 mm` thread cutter, matching the old `Thread left 24.8` / `Cap thread 24.8` print-clearance pattern.
+The old STEP text also exposes the thread tooth triangle: two side vectors are `0.565685 mm` at 45 degrees, and the base vector is `0.8 mm`. That corresponds to a `0.4 mm` radial tooth height, `0.8 mm` tooth base, and `0.8 mm` pitch/gap. Detailed measurements are maintained in `../../references/openhi-print-fit-and-thread-reference.md`.
 
 ## Why The Earlier Render Looked Smooth
 
@@ -50,45 +60,55 @@ The first render showed the assembly already threaded together. That hides the r
 | Feature | Value |
 | --- | ---: |
 | Tube total length | `50 mm` |
-| Left male thread length | `20 mm` |
-| Center body length | `10 mm` |
-| Right male thread length | `20 mm` |
+| Left male thread length | `15 mm` |
+| Center body length | `20 mm` |
+| Right male thread length | `15 mm` |
 | Tube bore | `20 mm` |
-| Tube body OD | `28 mm` |
-| Printed male thread major OD | `24.4 mm` |
-| Holder female thread cutter OD | `24.8 mm` |
-| Thread pitch | `0.79375 mm` |
-| Reflector inner pocket | `20 x 20 x 20 mm` |
+| Tube body OD | `28.4 mm` |
+| Printed male thread root OD | `24.4 mm` |
+| Printed male thread crest OD | `25.2 mm` |
+| Holder female bore/root OD | `24.8 mm` |
+| Holder female groove cutter crest OD | `25.6 mm` |
+| Male thread length inside holder | `15 mm` |
+| Maximum internal female thread length | `20 mm` |
+| Thread pitch | `0.8 mm` |
+| Thread tooth triangle | `0.4 mm` high, `0.8 mm` base |
+| Reflector inner pocket | `20.4 x 20.4 x 20.4 mm` |
 | Holder wall | `4 mm` |
 | Holder top | open |
 | Holder left side | open through threaded socket |
-| Optical axis height | `14 mm` |
+| Optical axis height | `14.2 mm` |
+| Assembly bounds | `83.4 x 34.0 x 31.2 mm` |
 
-The holder wall is thicker than the requested minimum. This makes the tube center body `28 mm` OD around the `20 mm` bore, giving a `4 mm` tube wall and placing the center body bottom exactly on the same `Z=0` plane as the reflector holder bottom when installed. Both male threads are modeled right-hand when viewed from their engaging end. The right-end thread is mirrored so it mates naturally with the left-facing female socket on the holder.
+The holder wall is thicker than the requested minimum. The `28.4 mm` tube center body is derived from the `14.2 mm` optical-axis height, so its bottom is exactly on the same `Z=0` plane as the reflector holder bottom when installed. Both male threads are modeled right-hand when viewed from their engaging end. The right-end thread is mirrored so it mates naturally with the left-facing female socket on the holder.
 
 ## Files
 
 - `threaded_reflector_assembly.scad`: printable source with helical thread approximation.
+- `analyze_reference_steps.py`: local helper for regenerating the old STEP solid measurement table.
 - `generate_support_artifacts.py`: STEP envelope, SVG, DXF, and PDF drawing generator.
 - `blender_render.py`: headless Blender render from the generated STL parts.
-- `artifacts/male_male_cmount_tube.stl`: printable threaded tube.
-- `artifacts/top_open_reflector_holder.stl`: printable reflector holder.
-- `artifacts/threaded_reflector_assembly.stl`: assembly preview only.
-- `artifacts/threaded_reflector_assembly_threaded.step`: single STEP assembly containing both parts with modeled thread geometry.
-- `artifacts/*_threaded.step`: individual threaded STEP parts.
-- `artifacts/*_envelope.step`: smooth STEP envelope files for lightweight CAD review.
-- `artifacts/*.svg`, `*.pdf`, `*.png`, `*.dxf`: support drawings.
+- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube.stl`: printable threaded tube.
+- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder.stl`: printable reflector holder.
+- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly.stl`: assembly preview only.
+- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_threaded.step`: single STEP assembly containing both parts with modeled thread geometry.
+- `artifacts/v2_15mm_threads_print_fit/*_threaded.step`: individual threaded STEP parts.
+- `artifacts/v2_15mm_threads_print_fit/*_envelope.step`: smooth STEP envelope files for lightweight CAD review.
+- `artifacts/v2_15mm_threads_print_fit/*.svg`, `*.pdf`, `*.png`, `*.dxf`: support drawings.
 
 DWG is not generated because it is proprietary; use the DXF sketch for CAD import.
 
 ## Generate
 
 ```bash
-openscad -D 'part="tube"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/male_male_cmount_tube.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
-openscad -D 'part="holder"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/top_open_reflector_holder.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
-openscad -D 'part="assembly"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/threaded_reflector_assembly.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+mkdir -p cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit
+openscad -D 'part="tube"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="holder"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="assembly"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="exploded"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/threaded_reflector_exploded.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
 cad/.conda/cad-python/bin/python cad/designs/cmount_threaded_reflector_assembly/generate_support_artifacts.py
 blender --background --python cad/designs/cmount_threaded_reflector_assembly/blender_render.py
+cad/.conda/cad-python/bin/python cad/designs/cmount_threaded_reflector_assembly/analyze_reference_steps.py
 ```
 
 Print the tube and holder as separate parts. Use the assembly STL only as a visual fit check.

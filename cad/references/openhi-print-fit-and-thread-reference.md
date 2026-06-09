@@ -1,0 +1,66 @@
+# OpenHI Print-Fit And Thread Reference
+
+Date: 2026-06-09
+
+## Scope
+
+This note records the print-fit dimensions inferred from the local OpenHI/Nature STEP reference files. The raw STEP archives remain ignored under `cad/sources/` and `cad/extracted/`; this file keeps the reusable measurements.
+
+Use these values for parts that thread into, slip into, or otherwise mate with the old 4f system. Do not scale a whole model to tune fit. Change the named male, female, pocket, or clearance parameters.
+
+## Thread Tooth Profile
+
+The old STEP files include repeated swept-triangle evidence:
+
+| Evidence | Value | Meaning |
+| --- | ---: | --- |
+| Side vector length | `0.565685 mm` | 45 degree side of a `0.4 x 0.4 mm` right triangle |
+| Tooth radial height | `0.4 mm` | root radius to crest radius |
+| Tooth base | `0.8 mm` | axial base of the isosceles tooth |
+| Pitch / gap | `0.8 mm` | helix advance per tooth, close to C-mount `0.79375 mm` |
+
+Practical rule: model the old printed thread as a `0.8 mm` pitch helix with a triangular tooth that is `0.4 mm` high and `0.8 mm` wide. Industrial C-mount is 1"-32, but the local STEP geometry appears rounded to `0.8 mm`.
+
+## Mating Fit Table
+
+| Fit role | Reference STEP evidence | Measured envelope | Print-fit rule |
+| --- | --- | ---: | --- |
+| C-mount/camera male thread | `OpenHI_STEP/B.step`, `OpenHI_STEP/C.step`: `Thread camera 24.4` | about `25.2 x 25.4 x 5.1 mm` thread envelope | Use `24.4 mm` male root OD and `25.2 mm` crest OD. |
+| Matching female socket/cutter | `OpenHI_STEP/Collimator tube.step`: `Thread left 24.8`; `Collimator cap.step`: `Cap thread 24.8` | about `25.6 x 25.4 x 5.8 mm` thread envelope | Use `24.8 mm` female bore/root and `25.6 mm` groove cutter crest. |
+| Larger lens/BS/top thread | `Thread lens 29.6`, `Thread lens 29.6*`, `Thread top`, `Thread BS`, `Outer thread` | about `30.6 x 30.9 mm` crest envelope | Use `29.6 mm` root OD for the inserted threaded side; enlarge the receiving side by the needed print clearance. |
+| Square branch module | `Lens B camera`, `Lens C camera`, `Scope fittings`, `T branch head` | exact `40 x 40 mm` cross sections | Keep the inserted body exact; add clearance to the receiving pocket. |
+| Reflector cube pocket | New holder for nominal `20 x 20 x 20 mm` reflector | v2 pocket is `20.4 x 20.4 x 20.4 mm` | Add `0.4 mm` total clearance for a printed receiver. |
+
+## Measured OpenHI Bodies
+
+| File | Solid label | Measured bounding box |
+| --- | --- | ---: |
+| `A.step` | `Thread top` | `30.600 x 30.860 x 8.749 mm` |
+| `A.step` | `Scope fittings (2)* (1)**` | `40.000 x 40.000 x 37.526 mm` |
+| `A.step` | `Scope fittings (2)* (1)*` | `40.000 x 40.000 x 12.874 mm` |
+| `B.step` | `Thread lens 29.6*` | `30.400 x 30.659 x 9.050 mm` |
+| `B.step` | `Thread camera 24.4` | `25.200 x 25.415 x 5.100 mm` |
+| `B.step` | `Lens B camera (1)**` | `40.000 x 40.000 x 35.013 mm` |
+| `B.step` | `Lens B camera (2)*` | `40.000 x 40.000 x 18.987 mm` |
+| `C.step` | `Thread camera 24.4` | `5.098 x 25.414 x 25.200 mm` |
+| `C.step` | `Thread lens 29.6` | `9.150 x 30.658 x 30.400 mm` |
+| `C.step` | `Lens C camera (1)*` | `35.013 x 40.000 x 40.000 mm` |
+| `C.step` | `Lens C camera (2)*` | `18.987 x 40.000 x 40.000 mm` |
+| `Collimator tube.step` | `Outer thread` | `30.860 x 20.800 x 30.600 mm` |
+| `Collimator tube.step` | `Thread left 24.8` | `25.616 x 5.800 x 25.400 mm` |
+| `Collimator tube.step` | `Collimating tube (1)` | `29.801 x 30.401 x 29.801 mm` |
+| `Collimator cap.step` | `Cap thread 24.8` | `25.616 x 5.800 x 25.400 mm` |
+| `Collimator cap.step` | `Collimator cap` | `33.800 x 20.000 x 33.800 mm` |
+| `Lens C holder.step` | `Thread BS` | `6.300 x 30.860 x 30.600 mm` |
+| `Lens C holder.step` | `T branch head (1)` | `50.000 x 40.000 x 40.000 mm` |
+
+## Current Use In The Reflector Assembly
+
+`cad/designs/cmount_threaded_reflector_assembly/` v2 applies this table as:
+
+- male root OD `24.4 mm`, male crest OD `25.2 mm`;
+- female bore/root OD `24.8 mm`, female groove cutter crest OD `25.6 mm`;
+- thread pitch `0.8 mm`, tooth height `0.4 mm`, tooth base `0.8 mm`;
+- two `15 mm` male thread sections;
+- female socket length `24 mm`, internally threaded for at most `20 mm`;
+- reflector pocket `20.4 x 20.4 x 20.4 mm`.

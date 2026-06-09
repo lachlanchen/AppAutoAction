@@ -10,29 +10,36 @@ import ezdxf
 
 
 ROOT = Path(__file__).resolve().parent
-ARTIFACTS = ROOT / "artifacts"
+DESIGN_VERSION = "v2_15mm_threads_print_fit"
+ARTIFACTS_ROOT = ROOT / "artifacts"
+ARTIFACTS = ARTIFACTS_ROOT / DESIGN_VERSION
 
 TUBE_TOTAL = 50.0
-THREAD_LEN = 20.0
-BODY_LEN = 10.0
-BODY_D = 28.0
-MALE_D = 24.4
+THREAD_LEN = 15.0
+BODY_LEN = TUBE_TOTAL - 2.0 * THREAD_LEN
+MALE_ROOT_D = 24.4
+THREAD_HEIGHT = 0.4
+THREAD_OVERLAP = 0.08
+MALE_CREST_D = MALE_ROOT_D + 2.0 * THREAD_HEIGHT
 BORE_D = 20.0
-AXIS_Z = 14.0
 
 WALL = 4.0
-INNER = 20.0
+REFLECTOR_NOMINAL = 20.0
+REFLECTOR_CLEARANCE = 0.4
+INNER = REFLECTOR_NOMINAL + REFLECTOR_CLEARANCE
+AXIS_Z = WALL + INNER / 2.0
+BODY_D = 2.0 * AXIS_Z
 HOLDER_SOCKET = 24.0
-HOLDER_BOX_X = 24.0
-HOLDER_Y = 28.0
-HOLDER_Z = 24.0
+FEMALE_THREAD_LEN = 20.0
+HOLDER_BOX_X = INNER + WALL
+HOLDER_Y = INNER + 2.0 * WALL
+HOLDER_Z = INNER + WALL
 SOCKET_OD = 34.0
-FEMALE_MINOR = 23.8
+FEMALE_ROOT_D = 24.8
+FEMALE_CREST_D = FEMALE_ROOT_D + 2.0 * THREAD_HEIGHT
 ASSEMBLY_HOLDER_X = TUBE_TOTAL - THREAD_LEN
-THREAD_PITCH = 25.4 / 32.0
-THREAD_DEPTH = 0.42
-THREAD_TOOTH_W = THREAD_PITCH * 0.55
-FEMALE_THREAD_CUTTER_D = 24.8
+THREAD_PITCH = 0.8
+THREAD_TOOTH_W = 0.8
 
 
 def x_cylinder(d: float, length: float, x0: float) -> cq.Workplane:
@@ -51,8 +58,9 @@ def x_clip_box(x0: float, length: float, y_span: float, z0: float, height: float
     return cq.Workplane("XY").box(length, y_span, height, centered=(False, True, False)).translate((x0, 0, z0))
 
 
-def external_thread_brep(x0: float, length: float, major_d: float, lefthand: bool = False) -> cq.Workplane:
-    root_r = major_d / 2 - THREAD_DEPTH
+def external_thread_brep(x0: float, length: float, root_d: float, lefthand: bool = False) -> cq.Workplane:
+    root_r = root_d / 2 - THREAD_OVERLAP
+    crest_d = root_d + 2.0 * THREAD_HEIGHT
     path = cq.Wire.makeHelix(
         THREAD_PITCH,
         length,
@@ -65,17 +73,17 @@ def external_thread_brep(x0: float, length: float, major_d: float, lefthand: boo
         cq.Workplane("XY")
         .workplane(offset=AXIS_Z)
         .center(x0, root_r)
-        .polyline([(0, 0), (THREAD_TOOTH_W / 2, THREAD_DEPTH), (THREAD_TOOTH_W, 0)])
+        .polyline([(0, 0), (THREAD_TOOTH_W / 2, THREAD_HEIGHT + THREAD_OVERLAP), (THREAD_TOOTH_W, 0)])
         .close()
     )
     thread = profile.sweep(path, isFrenet=True, combine=False)
-    return thread.intersect(x_clip_box(x0, length, major_d + 3, AXIS_Z - major_d / 2 - 2, major_d + 4))
+    return thread.intersect(x_clip_box(x0, length, crest_d + 3, AXIS_Z - crest_d / 2 - 2, crest_d + 4))
 
 
 def tube_envelope() -> cq.Workplane:
-    left = x_cylinder(MALE_D, THREAD_LEN, 0)
+    left = x_cylinder(MALE_CREST_D, THREAD_LEN, 0)
     body = x_cylinder(BODY_D, BODY_LEN, THREAD_LEN)
-    right = x_cylinder(MALE_D, THREAD_LEN, THREAD_LEN + BODY_LEN)
+    right = x_cylinder(MALE_CREST_D, THREAD_LEN, THREAD_LEN + BODY_LEN)
     tube = left.union(body).union(right)
     return tube.cut(x_cylinder(BORE_D, TUBE_TOTAL + 2, -1))
 
@@ -94,18 +102,17 @@ def holder_envelope(x0: float = 0) -> cq.Workplane:
     reinforce = centered_y_box(socket_left, 0, HOLDER_SOCKET + WALL, HOLDER_Y, WALL)
 
     holder = bottom.union(side_a).union(side_b).union(right).union(socket).union(reinforce)
-    return holder.cut(x_cylinder(FEMALE_MINOR, HOLDER_SOCKET + 1, socket_left - 0.5))
+    return holder.cut(x_cylinder(FEMALE_ROOT_D, HOLDER_SOCKET + 1, socket_left - 0.5))
 
 
 def threaded_tube() -> cq.Workplane:
-    root_d = MALE_D - 2 * THREAD_DEPTH + 0.24
     right_x = THREAD_LEN + BODY_LEN
     tube = (
-        x_cylinder(root_d, THREAD_LEN + 0.2, 0)
+        x_cylinder(MALE_ROOT_D, THREAD_LEN + 0.2, 0)
         .union(x_cylinder(BODY_D, BODY_LEN + 0.4, THREAD_LEN - 0.2))
-        .union(x_cylinder(root_d, THREAD_LEN + 0.2, right_x - 0.2))
-        .union(external_thread_brep(0, THREAD_LEN, MALE_D, lefthand=False))
-        .union(external_thread_brep(right_x, THREAD_LEN, MALE_D, lefthand=True))
+        .union(x_cylinder(MALE_ROOT_D, THREAD_LEN + 0.2, right_x - 0.2))
+        .union(external_thread_brep(0, THREAD_LEN, MALE_ROOT_D, lefthand=False))
+        .union(external_thread_brep(right_x, THREAD_LEN, MALE_ROOT_D, lefthand=True))
     )
     return tube.cut(x_cylinder(BORE_D, TUBE_TOTAL + 2, -1))
 
@@ -124,8 +131,8 @@ def threaded_holder(x0: float = 0) -> cq.Workplane:
     reinforce = centered_y_box(socket_left, 0, HOLDER_SOCKET + WALL, HOLDER_Y, WALL)
 
     holder = bottom.union(side_a).union(side_b).union(right).union(socket).union(reinforce)
-    cutter = x_cylinder(FEMALE_MINOR, HOLDER_SOCKET + 1, socket_left - 0.5).union(
-        external_thread_brep(socket_left - 0.5, HOLDER_SOCKET + 1, FEMALE_THREAD_CUTTER_D, lefthand=True)
+    cutter = x_cylinder(FEMALE_ROOT_D, HOLDER_SOCKET + 1, socket_left - 0.5).union(
+        external_thread_brep(socket_left - 0.5, FEMALE_THREAD_LEN, FEMALE_ROOT_D, lefthand=True)
     )
     return holder.cut(cutter)
 
@@ -193,22 +200,22 @@ def write_side_svg() -> Path:
     out += [
         text(60, 36, "Side section: 50 mm male-male C-mount tube into top-open reflector holder", 18),
         line(45, z_base, 840, z_base, "#94a3b8", 1),
-        rect(x0, tube_y + 0.8 * scale, THREAD_LEN * scale, 24.4 * scale, "#bfdbfe", width=2),
-        rect(x0 + THREAD_LEN * scale, z_base - 26 * scale, BODY_LEN * scale, 26 * scale, "#93c5fd", width=2),
-        rect(x0 + (THREAD_LEN + BODY_LEN) * scale, tube_y + 0.8 * scale, THREAD_LEN * scale, 24.4 * scale, "#bfdbfe", width=2),
-        rect(holder_x, z_base - 29 * scale, HOLDER_SOCKET * scale, 29 * scale, "#bbf7d0", width=2),
+        rect(x0, tube_y + 0.8 * scale, THREAD_LEN * scale, MALE_CREST_D * scale, "#bfdbfe", width=2),
+        rect(x0 + THREAD_LEN * scale, z_base - BODY_D * scale, BODY_LEN * scale, BODY_D * scale, "#93c5fd", width=2),
+        rect(x0 + (THREAD_LEN + BODY_LEN) * scale, tube_y + 0.8 * scale, THREAD_LEN * scale, MALE_CREST_D * scale, "#bfdbfe", width=2),
+        rect(holder_x, z_base - SOCKET_OD * scale, HOLDER_SOCKET * scale, SOCKET_OD * scale, "#bbf7d0", width=2),
         rect(holder_box_x, z_base - HOLDER_Z * scale, HOLDER_BOX_X * scale, HOLDER_Z * scale, "#dcfce7", width=2),
         rect(holder_box_x, z_base - (WALL + INNER) * scale, INNER * scale, INNER * scale, "#f8fafc", "#16a34a", 2, "7 6"),
         rect(holder_box_x + INNER * scale, z_base - HOLDER_Z * scale, WALL * scale, HOLDER_Z * scale, "#86efac", width=2),
         line(x0, z_base - AXIS_Z * scale, 820, z_base - AXIS_Z * scale, "#ef4444", 1.5, "8 6"),
-        text(x0 + 16, tube_y + 34, "left 20 mm thread", 13, "#1e40af"),
-        text(x0 + 176, tube_y + 34, "body 10", 12, "#1e40af"),
-        text(x0 + 266, tube_y + 34, "right 20 mm thread", 13, "#1e40af"),
-        text(holder_box_x + 14, z_base - 190, "20 x 20 x 20 mm reflector pocket, top open", 13, "#166534"),
+        text(x0 + 16, tube_y + 34, "left 15 mm thread", 13, "#1e40af"),
+        text(x0 + 144, tube_y + 34, "body 20 mm", 12, "#1e40af"),
+        text(x0 + 296, tube_y + 34, "right 15 mm thread", 13, "#1e40af"),
+        text(holder_box_x + 14, z_base - 190, "20.4 x 20.4 x 20.4 mm reflector pocket, top open", 13, "#166534"),
     ]
     out += dim(x0, z_base + 28, x0 + TUBE_TOTAL * scale, z_base + 28, "tube total 50 mm", x0 + 150, z_base + 52)
-    out += dim(x0, z_base + 58, x0 + THREAD_LEN * scale, z_base + 58, "20 mm", x0 + 58, z_base + 82)
-    out += dim(x0 + (THREAD_LEN + BODY_LEN) * scale, z_base + 58, x0 + TUBE_TOTAL * scale, z_base + 58, "20 mm", x0 + 292, z_base + 82)
+    out += dim(x0, z_base + 58, x0 + THREAD_LEN * scale, z_base + 58, "15 mm", x0 + 45, z_base + 82)
+    out += dim(x0 + (THREAD_LEN + BODY_LEN) * scale, z_base + 58, x0 + TUBE_TOTAL * scale, z_base + 58, "15 mm", x0 + 315, z_base + 82)
     out.append("</svg>")
     path = ARTIFACTS / "assembly_side_section.svg"
     path.write_text("\n".join(out), encoding="utf-8")
@@ -224,19 +231,19 @@ def write_top_svg() -> Path:
     out = svg_header(900, 360)
     out += [
         text(60, 36, "Top view: holder is top-open and left-open through the threaded socket", 18),
-        rect(x0, y0 - 12.2 * scale, THREAD_LEN * scale, 24.4 * scale, "#bfdbfe"),
-        rect(x0 + THREAD_LEN * scale, y0 - 13 * scale, BODY_LEN * scale, 26 * scale, "#93c5fd"),
-        rect(x0 + (THREAD_LEN + BODY_LEN) * scale, y0 - 12.2 * scale, THREAD_LEN * scale, 24.4 * scale, "#bfdbfe"),
-        rect(holder_x, y0 - 16 * scale, HOLDER_SOCKET * scale, 32 * scale, "#bbf7d0"),
-        rect(holder_box_x, y0 - 13 * scale, HOLDER_BOX_X * scale, 26 * scale, "#dcfce7"),
-        rect(holder_box_x, y0 - 10 * scale, INNER * scale, 20 * scale, "#f8fafc", "#16a34a", 2, "7 6"),
-        rect(holder_box_x + INNER * scale, y0 - 13 * scale, WALL * scale, 26 * scale, "#86efac"),
+        rect(x0, y0 - 12.2 * scale, THREAD_LEN * scale, MALE_CREST_D * scale, "#bfdbfe"),
+        rect(x0 + THREAD_LEN * scale, y0 - BODY_D / 2 * scale, BODY_LEN * scale, BODY_D * scale, "#93c5fd"),
+        rect(x0 + (THREAD_LEN + BODY_LEN) * scale, y0 - 12.2 * scale, THREAD_LEN * scale, MALE_CREST_D * scale, "#bfdbfe"),
+        rect(holder_x, y0 - SOCKET_OD / 2 * scale, HOLDER_SOCKET * scale, SOCKET_OD * scale, "#bbf7d0"),
+        rect(holder_box_x, y0 - HOLDER_Y / 2 * scale, HOLDER_BOX_X * scale, HOLDER_Y * scale, "#dcfce7"),
+        rect(holder_box_x, y0 - INNER / 2 * scale, INNER * scale, INNER * scale, "#f8fafc", "#16a34a", 2, "7 6"),
+        rect(holder_box_x + INNER * scale, y0 - HOLDER_Y / 2 * scale, WALL * scale, HOLDER_Y * scale, "#86efac"),
         line(x0, y0, 830, y0, "#ef4444", 1.5, "8 6"),
         text(holder_box_x + 14, y0 - 96, "left side opens to tube", 13, "#166534"),
         text(holder_box_x + 14, y0 + 116, "top is open; no lid modeled", 13, "#166534"),
     ]
-    out += dim(holder_box_x, y0 + 134, holder_box_x + INNER * scale, y0 + 134, "inner 20 mm", holder_box_x + 45, y0 + 158)
-    out += dim(holder_x, y0 - 136, holder_x + HOLDER_SOCKET * scale, y0 - 136, "female socket 22 mm", holder_x + 35, y0 - 148)
+    out += dim(holder_box_x, y0 + 134, holder_box_x + INNER * scale, y0 + 134, "inner 20.4 mm", holder_box_x + 45, y0 + 158)
+    out += dim(holder_x, y0 - 136, holder_x + HOLDER_SOCKET * scale, y0 - 136, "female socket 24 mm", holder_x + 35, y0 - 148)
     out.append("</svg>")
     path = ARTIFACTS / "assembly_top_view.svg"
     path.write_text("\n".join(out), encoding="utf-8")
@@ -247,13 +254,36 @@ def write_dxf() -> Path:
     doc = ezdxf.new("R2010")
     doc.units = ezdxf.units.MM
     msp = doc.modelspace()
-    msp.add_lwpolyline([(0, -13), (50, -13), (50, 13), (0, 13), (0, -13)], close=True)
-    msp.add_line((20, -13), (20, 13))
-    msp.add_line((30, -13), (30, 13))
-    msp.add_lwpolyline([(30, -16), (52, -16), (52, 16), (30, 16), (30, -16)], close=True)
-    msp.add_lwpolyline([(52, -13), (75, -13), (75, 13), (52, 13), (52, -13)], close=True)
-    msp.add_lwpolyline([(52, -10), (72, -10), (72, 10), (52, 10), (52, -10)], close=True)
-    msp.add_text("Top view, units mm: tube 50 mm, threads 20 mm each, holder pocket 20x20", height=2.5).set_placement((0, 25))
+    holder_x = ASSEMBLY_HOLDER_X
+    holder_box_x = holder_x + HOLDER_SOCKET
+    msp.add_lwpolyline([(0, -13), (TUBE_TOTAL, -13), (TUBE_TOTAL, 13), (0, 13), (0, -13)], close=True)
+    msp.add_line((THREAD_LEN, -13), (THREAD_LEN, 13))
+    msp.add_line((THREAD_LEN + BODY_LEN, -13), (THREAD_LEN + BODY_LEN, 13))
+    msp.add_lwpolyline(
+        [(holder_x, -SOCKET_OD / 2), (holder_box_x, -SOCKET_OD / 2), (holder_box_x, SOCKET_OD / 2), (holder_x, SOCKET_OD / 2), (holder_x, -SOCKET_OD / 2)],
+        close=True,
+    )
+    msp.add_lwpolyline(
+        [
+            (holder_box_x, -HOLDER_Y / 2),
+            (holder_box_x + HOLDER_BOX_X, -HOLDER_Y / 2),
+            (holder_box_x + HOLDER_BOX_X, HOLDER_Y / 2),
+            (holder_box_x, HOLDER_Y / 2),
+            (holder_box_x, -HOLDER_Y / 2),
+        ],
+        close=True,
+    )
+    msp.add_lwpolyline(
+        [
+            (holder_box_x, -INNER / 2),
+            (holder_box_x + INNER, -INNER / 2),
+            (holder_box_x + INNER, INNER / 2),
+            (holder_box_x, INNER / 2),
+            (holder_box_x, -INNER / 2),
+        ],
+        close=True,
+    )
+    msp.add_text("Top view, units mm: tube 50 mm, threads 15 mm each, holder pocket 20.4x20.4", height=2.5).set_placement((0, 25))
     path = ARTIFACTS / "threaded_reflector_assembly_top_sketch.dxf"
     doc.saveas(path)
     return path

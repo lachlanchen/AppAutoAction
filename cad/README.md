@@ -20,20 +20,21 @@ These raw zip and STEP dumps are intentionally ignored by git. Keep them local u
 ## Designs
 
 - `designs/cmount_reflector_adapter/`: printable C-mount male to reflector-cube adapter draft. One end uses a printer-compensated external C-mount-like thread; the other end is a 20 x 20 x 20 mm internal reflector chamber with 3 mm walls.
-- `designs/cmount_threaded_reflector_assembly/`: newer two-part design with a 50 mm male-male C-mount tube, 20 mm threads on each end, 28 mm thick center body, and a top-open 20 x 20 x 20 mm reflector holder with a female threaded left socket.
+- `designs/cmount_threaded_reflector_assembly/`: two-part design with versioned artifacts. Current v2 has a 50 mm male-male C-mount tube, 15 mm male threads on each end, 28.4 mm thick center body, and a top-open 20.4 x 20.4 x 20.4 mm reflector holder with a max 20 mm internal female thread.
 
 ## Research Notes
 
 - `research/openhi_nature_step_notes.md`: inventory and inferred C-mount dimensions from the OpenHI/Nature STEP examples.
 - `references/cmount-reflector-adapter-scale.md`: 1:1 scale table for the C-mount reflector adapter.
 - `references/cmount-threaded-reflector-assembly-scale.md`: scale table and old A/B/C 4f branch evidence for the newer two-part reflector assembly.
+- `references/openhi-print-fit-and-thread-reference.md`: measured old STEP mating table for the 24.4/24.8 thread fit, 29.6 larger thread family, 40 mm square modules, and 0.4 mm printed receiver clearance rule.
 - `references/cad-toolchain.md`: installed CAD tools, local Python CAD kernel, and render commands.
 - `environment-cad-python.yml`: reproducible conda environment spec for CadQuery/build123d/OCP work.
 - `../pcb/jlcpcb-jialichuang-automation.md`: JLCPCB/Jialichuang order automation research and safe automation boundary.
 
 ## Scale Convention
 
-CAD source files are authored in millimetres at 1:1 scale. For the C-mount reflector adapter, the expected slicer/CAD bounding box is `49.5 x 26 x 26 mm`. Tune thread fit by changing the named thread parameters, not by scaling the whole model.
+CAD source files are authored in millimetres at 1:1 scale. For the C-mount reflector adapter, the expected slicer/CAD bounding box is `49.5 x 26 x 26 mm`. For the current threaded reflector assembly v2, the expected assembly bounding box is `83.4 x 34.0 x 31.2 mm`. Tune thread fit by changing the named thread, socket, or pocket parameters, not by scaling the whole model.
 
 Current verified render/export path:
 

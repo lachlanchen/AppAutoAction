@@ -22,7 +22,7 @@ The files include named solids that expose the designer's intended thread diamet
 - `OpenHI_STEP/Collimator cap.step`: `Cap thread 24.8`
 - `Nature_STEP/BS lateral.step.step`: repeated `Thread camera 24.4`, `Thread lens 29.6`, `Thread top`, `Thread BS`
 
-Inference: the camera-side thread appears to be a C-mount-compatible printed fit that was intentionally reduced from the nominal 25.4 mm C-mount diameter to about 24.4 mm. This matches the note that roughly 1 mm was adjusted to make the 3D print fit the real mating part.
+Inference: the camera-side thread appears to be a C-mount-compatible printed fit. The old STEP labels use `24.4` for the inserted camera-side male root/fit diameter and `24.8` for matching female/cutter-side references, giving a `0.4 mm` diametral print-fit allowance.
 
 ## C-Mount Baseline
 
@@ -30,11 +30,13 @@ Industrial C-mount uses a 1"-32 UN thread with nominal 25.4 mm diameter and 1/32
 
 For printed prototypes, use the local reference value first:
 
-- `thread_major_d = 24.4 mm`
-- `thread_pitch = 25.4 / 32 = 0.79375 mm`
-- `thread_length = 5.5 mm` initial draft
+- `male_thread_root_d = 24.4 mm`
+- `female_thread_root_d = 24.8 mm`
+- `thread_pitch = 0.8 mm` for local STEP-matched printed parts
+- `thread_tooth_height = 0.4 mm`
+- `thread_tooth_base = 0.8 mm`
 
-Validate fit with a short threaded test coupon before printing the full adapter.
+The industrial C-mount pitch is `0.79375 mm`; the old STEP thread profile appears rounded to `0.8 mm`, with a swept triangular tooth. Validate fit with a short threaded test coupon before printing the full adapter.
 
 Sources:
 
@@ -59,4 +61,4 @@ The OpenSCAD file keeps these as named parameters so print compensation can be t
 
 Detailed 1:1 scale parameters and print-check dimensions are consolidated in `cad/references/cmount-reflector-adapter-scale.md`.
 
-The newer threaded tube plus top-open reflector holder is documented separately in `cad/references/cmount-threaded-reflector-assembly-scale.md`.
+The newer threaded tube plus top-open reflector holder is documented separately in `cad/references/cmount-threaded-reflector-assembly-scale.md`. The reusable old STEP measurement table is in `cad/references/openhi-print-fit-and-thread-reference.md`.
