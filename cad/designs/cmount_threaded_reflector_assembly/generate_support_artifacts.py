@@ -11,8 +11,11 @@ import ezdxf
 
 ROOT = Path(__file__).resolve().parent
 DESIGN_VERSION = "v2_15mm_threads_print_fit"
-ARTIFACTS_ROOT = ROOT / "artifacts"
-ARTIFACTS = ARTIFACTS_ROOT / DESIGN_VERSION
+ARTIFACTS_ROOT = ROOT / "artifacts" / DESIGN_VERSION
+PRINTABLE_RUN_NAME = "2026-06-09_v2_printable_assembly"
+DECOMPOSITION_RUN_NAME = "2026-06-10_v2_editable_decomposition"
+PRINTABLE_RUN = ARTIFACTS_ROOT / PRINTABLE_RUN_NAME
+DECOMPOSITION_RUN = ARTIFACTS_ROOT / DECOMPOSITION_RUN_NAME
 
 TUBE_TOTAL = 50.0
 THREAD_LEN = 15.0
@@ -195,7 +198,7 @@ def export_individual(path: Path, shape: cq.Workplane) -> None:
 
 def export_openscad_part(part_name: str, output_name: str) -> None:
     source = ROOT / "threaded_reflector_assembly.scad"
-    output = ARTIFACTS / output_name
+    output = DECOMPOSITION_RUN / output_name
     subprocess.run(
         ["openscad", "-D", f'part="{part_name}"', "-o", str(output), str(source)],
         check=True,
@@ -207,9 +210,9 @@ def export_decomposed_steps() -> None:
     tube_left_thread = left_male_thread()
     tube_right_thread = right_male_thread()
 
-    export_individual(ARTIFACTS / "tube_base_no_threads", tube_base)
-    export_individual(ARTIFACTS / "tube_left_male_thread", tube_left_thread)
-    export_individual(ARTIFACTS / "tube_right_male_thread", tube_right_thread)
+    export_individual(DECOMPOSITION_RUN / "tube_base_no_threads", tube_base)
+    export_individual(DECOMPOSITION_RUN / "tube_left_male_thread", tube_left_thread)
+    export_individual(DECOMPOSITION_RUN / "tube_right_male_thread", tube_right_thread)
     # CadQuery STEP is useful for named CAD solids; OpenSCAD produces closed STL caps
     # for the standalone twisted thread bodies.
     export_openscad_part("tube_left_thread", "tube_left_male_thread.stl")
@@ -219,13 +222,13 @@ def export_decomposed_steps() -> None:
     tube_recipe.add(tube_base, name="tube_base_no_threads")
     tube_recipe.add(tube_left_thread, name="left_male_thread_add")
     tube_recipe.add(tube_right_thread, name="right_male_thread_add")
-    tube_recipe.save(str(ARTIFACTS / "male_male_cmount_tube_decomposed.step"))
+    tube_recipe.save(str(DECOMPOSITION_RUN / "male_male_cmount_tube_decomposed.step"))
 
     tube_exploded = cq.Assembly(name="male_male_cmount_tube_decomposed_exploded")
     tube_exploded.add(tube_base, name="tube_base_no_threads")
     tube_exploded.add(tube_left_thread.translate((0, -34, 0)), name="left_male_thread_add_offset")
     tube_exploded.add(tube_right_thread.translate((0, 34, 0)), name="right_male_thread_add_offset")
-    tube_exploded.save(str(ARTIFACTS / "male_male_cmount_tube_decomposed_exploded.step"))
+    tube_exploded.save(str(DECOMPOSITION_RUN / "male_male_cmount_tube_decomposed_exploded.step"))
 
     cube_shell = holder_cube_shell(0)
     socket_outer = holder_socket_outer(0)
@@ -235,20 +238,20 @@ def export_decomposed_steps() -> None:
     thread_cutter = holder_female_thread_cutter(0)
     full_cutter = holder_full_thread_cutter(0)
 
-    export_individual(ARTIFACTS / "holder_cube_shell", cube_shell)
-    export_individual(ARTIFACTS / "holder_socket_outer", socket_outer)
-    export_individual(ARTIFACTS / "holder_bottom_reinforcement", reinforcement)
-    export_individual(ARTIFACTS / "holder_smooth_bore_base", smooth_bore)
-    export_individual(ARTIFACTS / "holder_female_bore_cutter", bore_cutter)
-    export_individual(ARTIFACTS / "holder_female_thread_cutter", thread_cutter)
-    export_individual(ARTIFACTS / "holder_full_thread_cutter", full_cutter)
+    export_individual(DECOMPOSITION_RUN / "holder_cube_shell", cube_shell)
+    export_individual(DECOMPOSITION_RUN / "holder_socket_outer", socket_outer)
+    export_individual(DECOMPOSITION_RUN / "holder_bottom_reinforcement", reinforcement)
+    export_individual(DECOMPOSITION_RUN / "holder_smooth_bore_base", smooth_bore)
+    export_individual(DECOMPOSITION_RUN / "holder_female_bore_cutter", bore_cutter)
+    export_individual(DECOMPOSITION_RUN / "holder_female_thread_cutter", thread_cutter)
+    export_individual(DECOMPOSITION_RUN / "holder_full_thread_cutter", full_cutter)
 
     holder_recipe = cq.Assembly(name="top_open_reflector_holder_boolean_recipe")
     holder_recipe.add(holder_base_solid(0), name="holder_base_solid_before_subtraction")
     holder_recipe.add(smooth_bore, name="holder_smooth_bore_base")
     holder_recipe.add(thread_cutter, name="female_thread_cutter_subtract")
     holder_recipe.add(threaded_holder(0), name="threaded_holder_result")
-    holder_recipe.save(str(ARTIFACTS / "top_open_reflector_holder_boolean_recipe.step"))
+    holder_recipe.save(str(DECOMPOSITION_RUN / "top_open_reflector_holder_boolean_recipe.step"))
 
     holder_decomp = cq.Assembly(name="top_open_reflector_holder_decomposed_objects")
     holder_decomp.add(cube_shell, name="reflector_cube_shell")
@@ -256,7 +259,7 @@ def export_decomposed_steps() -> None:
     holder_decomp.add(reinforcement, name="bottom_reinforcement")
     holder_decomp.add(bore_cutter, name="bore_cutter_subtract")
     holder_decomp.add(thread_cutter, name="female_thread_cutter_subtract")
-    holder_decomp.save(str(ARTIFACTS / "top_open_reflector_holder_decomposed.step"))
+    holder_decomp.save(str(DECOMPOSITION_RUN / "top_open_reflector_holder_decomposed.step"))
 
     holder_exploded = cq.Assembly(name="top_open_reflector_holder_decomposed_exploded")
     holder_exploded.add(cube_shell, name="reflector_cube_shell")
@@ -264,7 +267,7 @@ def export_decomposed_steps() -> None:
     holder_exploded.add(reinforcement.translate((0, 42, 0)), name="bottom_reinforcement_offset")
     holder_exploded.add(bore_cutter.translate((0, -76, 0)), name="bore_cutter_subtract_offset")
     holder_exploded.add(thread_cutter.translate((0, 76, 0)), name="female_thread_cutter_subtract_offset")
-    holder_exploded.save(str(ARTIFACTS / "top_open_reflector_holder_decomposed_exploded.step"))
+    holder_exploded.save(str(DECOMPOSITION_RUN / "top_open_reflector_holder_decomposed_exploded.step"))
 
     full_recipe = cq.Assembly(name="threaded_reflector_full_decomposition")
     full_recipe.add(tube_base, name="tube_base_no_threads")
@@ -275,29 +278,30 @@ def export_decomposed_steps() -> None:
     full_recipe.add(reinforcement.translate((ASSEMBLY_HOLDER_X, 0, 0)), name="holder_bottom_reinforcement")
     full_recipe.add(bore_cutter.translate((ASSEMBLY_HOLDER_X, 0, 0)), name="holder_bore_cutter_subtract")
     full_recipe.add(thread_cutter.translate((ASSEMBLY_HOLDER_X, 0, 0)), name="holder_female_thread_cutter_subtract")
-    full_recipe.save(str(ARTIFACTS / "threaded_reflector_full_decomposition.step"))
+    full_recipe.save(str(DECOMPOSITION_RUN / "threaded_reflector_full_decomposition.step"))
 
 
 def export_steps() -> None:
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    PRINTABLE_RUN.mkdir(parents=True, exist_ok=True)
+    DECOMPOSITION_RUN.mkdir(parents=True, exist_ok=True)
     tube = tube_envelope()
     holder = holder_envelope(0)
-    cq.exporters.export(tube, str(ARTIFACTS / "male_male_cmount_tube_envelope.step"))
-    cq.exporters.export(holder, str(ARTIFACTS / "top_open_reflector_holder_envelope.step"))
+    cq.exporters.export(tube, str(PRINTABLE_RUN / "male_male_cmount_tube_envelope.step"))
+    cq.exporters.export(holder, str(PRINTABLE_RUN / "top_open_reflector_holder_envelope.step"))
 
     assembly = cq.Assembly(name="threaded_reflector_assembly")
     assembly.add(tube, name="male_male_cmount_tube")
     assembly.add(holder_envelope(ASSEMBLY_HOLDER_X), name="top_open_reflector_holder")
-    assembly.save(str(ARTIFACTS / "threaded_reflector_assembly_envelope.step"))
+    assembly.save(str(PRINTABLE_RUN / "threaded_reflector_assembly_envelope.step"))
 
     threaded_tube_part = threaded_tube()
     threaded_holder_part = threaded_holder(0)
-    cq.exporters.export(threaded_tube_part, str(ARTIFACTS / "male_male_cmount_tube_threaded.step"))
-    cq.exporters.export(threaded_holder_part, str(ARTIFACTS / "top_open_reflector_holder_threaded.step"))
+    cq.exporters.export(threaded_tube_part, str(PRINTABLE_RUN / "male_male_cmount_tube_threaded.step"))
+    cq.exporters.export(threaded_holder_part, str(PRINTABLE_RUN / "top_open_reflector_holder_threaded.step"))
     threaded_assembly = cq.Assembly(name="threaded_reflector_assembly_with_modeled_threads")
     threaded_assembly.add(threaded_tube_part, name="male_male_cmount_tube_threaded")
     threaded_assembly.add(threaded_holder(ASSEMBLY_HOLDER_X), name="top_open_reflector_holder_female_threaded")
-    threaded_assembly.save(str(ARTIFACTS / "threaded_reflector_assembly_threaded.step"))
+    threaded_assembly.save(str(PRINTABLE_RUN / "threaded_reflector_assembly_threaded.step"))
     export_decomposed_steps()
 
 
@@ -359,7 +363,7 @@ def write_side_svg() -> Path:
     out += dim(x0, z_base + 58, x0 + THREAD_LEN * scale, z_base + 58, "15 mm", x0 + 45, z_base + 82)
     out += dim(x0 + (THREAD_LEN + BODY_LEN) * scale, z_base + 58, x0 + TUBE_TOTAL * scale, z_base + 58, "15 mm", x0 + 315, z_base + 82)
     out.append("</svg>")
-    path = ARTIFACTS / "assembly_side_section.svg"
+    path = PRINTABLE_RUN / "assembly_side_section.svg"
     path.write_text("\n".join(out), encoding="utf-8")
     return path
 
@@ -387,7 +391,7 @@ def write_top_svg() -> Path:
     out += dim(holder_box_x, y0 + 134, holder_box_x + INNER * scale, y0 + 134, "inner 20.4 mm", holder_box_x + 45, y0 + 158)
     out += dim(holder_x, y0 - 136, holder_x + HOLDER_SOCKET * scale, y0 - 136, "female socket 24 mm", holder_x + 35, y0 - 148)
     out.append("</svg>")
-    path = ARTIFACTS / "assembly_top_view.svg"
+    path = PRINTABLE_RUN / "assembly_top_view.svg"
     path.write_text("\n".join(out), encoding="utf-8")
     return path
 
@@ -417,7 +421,7 @@ def write_thread_profile_svg() -> Path:
         f'<line x1="{base_x + tooth_base / 2 + 14}" y1="{base_y}" x2="{base_x + tooth_base / 2 + 14}" y2="{base_y - tooth_height}" stroke="#111827" stroke-width="1.6" marker-start="url(#arrow)" marker-end="url(#arrow)"/>',
     ]
     out.append("</svg>")
-    path = ARTIFACTS / "thread_profile_sketch.svg"
+    path = DECOMPOSITION_RUN / "thread_profile_sketch.svg"
     path.write_text("\n".join(out), encoding="utf-8")
     return path
 
@@ -447,7 +451,7 @@ def write_decomposition_svg() -> Path:
         text(58, 468, "STEP assemblies keep same-coordinate Boolean parts; exploded STEP files offset parts for inspection.", 13, "#334155"),
     ]
     out.append("</svg>")
-    path = ARTIFACTS / "decomposition_recipe_sketch.svg"
+    path = DECOMPOSITION_RUN / "decomposition_recipe_sketch.svg"
     path.write_text("\n".join(out), encoding="utf-8")
     return path
 
@@ -486,7 +490,7 @@ def write_dxf() -> Path:
         close=True,
     )
     msp.add_text("Top view, units mm: tube 50 mm, threads 15 mm each, holder pocket 20.4x20.4", height=2.5).set_placement((0, 25))
-    path = ARTIFACTS / "threaded_reflector_assembly_top_sketch.dxf"
+    path = PRINTABLE_RUN / "threaded_reflector_assembly_top_sketch.dxf"
     doc.saveas(path)
     return path
 
@@ -505,7 +509,8 @@ def svg_to_pdf_and_png(svg: Path) -> None:
 
 
 def main() -> None:
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    PRINTABLE_RUN.mkdir(parents=True, exist_ok=True)
+    DECOMPOSITION_RUN.mkdir(parents=True, exist_ok=True)
     export_steps()
     svgs = [write_side_svg(), write_top_svg(), write_thread_profile_svg(), write_decomposition_svg()]
     write_dxf()

@@ -30,7 +30,14 @@ Imported A/B/C branch bounding boxes:
 | Version | Folder | Notes |
 | --- | --- | --- |
 | v1 | `cad/designs/cmount_threaded_reflector_assembly/artifacts/v1_20mm_threads/` | Previous `20 mm + 10 mm + 20 mm` tube, `20 x 20 x 20 mm` pocket. |
-| v2 | `cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/` | Current print-fit design using the old STEP `24.4/24.8` male/female rule and `0.4 mm` reflector pocket clearance. |
+| v2 | `cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/` | Current print-fit design using the old STEP `24.4/24.8` male/female rule and `0.4 mm` reflector pocket clearance. The folder is split into named run subfolders. |
+
+Current v2 runs:
+
+| Run | Folder | Main file |
+| --- | --- | --- |
+| Printable assembly | `2026-06-09_v2_printable_assembly/` | `threaded_reflector_assembly_threaded.step` |
+| Editable decomposition | `2026-06-10_v2_editable_decomposition/` | `threaded_reflector_full_decomposition.step` |
 
 ## Thread And Fit Rule
 
@@ -79,32 +86,32 @@ See `openhi-print-fit-and-thread-reference.md` for the measured table.
 
 Primary printable files:
 
-- `cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube.stl`
-- `cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder.stl`
+- `cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/male_male_cmount_tube.stl`
+- `cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/top_open_reflector_holder.stl`
 
 Support files:
 
-- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube_envelope.step`
-- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_envelope.step`
-- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_envelope.step`
-- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube_threaded.step`
-- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_threaded.step`
-- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_threaded.step`
-- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_exploded_thread_detail.png`
-- `artifacts/v2_15mm_threads_print_fit/assembly_side_section.svg`
-- `artifacts/v2_15mm_threads_print_fit/assembly_top_view.svg`
-- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_top_sketch.dxf`
-- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube_decomposed.step`
-- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube_decomposed_exploded.step`
-- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_boolean_recipe.step`
-- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_decomposed.step`
-- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_decomposed_exploded.step`
-- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_full_decomposition.step`
-- `artifacts/v2_15mm_threads_print_fit/tube_left_male_thread.step`
-- `artifacts/v2_15mm_threads_print_fit/tube_right_male_thread.step`
-- `artifacts/v2_15mm_threads_print_fit/holder_female_thread_cutter.step`
-- `artifacts/v2_15mm_threads_print_fit/thread_profile_sketch.svg`
-- `artifacts/v2_15mm_threads_print_fit/decomposition_recipe_sketch.svg`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/male_male_cmount_tube_envelope.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/top_open_reflector_holder_envelope.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly_envelope.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/male_male_cmount_tube_threaded.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/top_open_reflector_holder_threaded.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly_threaded.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_exploded_thread_detail.png`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/assembly_side_section.svg`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/assembly_top_view.svg`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly_top_sketch.dxf`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/male_male_cmount_tube_decomposed.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/male_male_cmount_tube_decomposed_exploded.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/top_open_reflector_holder_boolean_recipe.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/top_open_reflector_holder_decomposed.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/top_open_reflector_holder_decomposed_exploded.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/threaded_reflector_full_decomposition.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/tube_left_male_thread.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/tube_right_male_thread.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/holder_female_thread_cutter.step`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/thread_profile_sketch.svg`
+- `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/decomposition_recipe_sketch.svg`
 
 Use STL for printing because it is generated directly from the printable OpenSCAD thread geometry. Use `threaded_reflector_assembly_threaded.step` when a single STEP file with both threaded parts is needed. The envelope STEP files are intentionally smooth and lightweight.
 

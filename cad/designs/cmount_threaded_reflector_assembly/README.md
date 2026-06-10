@@ -2,18 +2,33 @@
 
 This is a new two-part design. It does not replace `../cmount_reflector_adapter/`.
 
-Current printable version: `artifacts/v2_15mm_threads_print_fit/`.
+Current printable version: `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/`.
 
-![Threaded C-mount tube and top-open reflector holder](artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_render.png)
+![Threaded C-mount tube and top-open reflector holder](artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly_render.png)
 
-![Exploded view showing the male thread ridges and holder socket](artifacts/v2_15mm_threads_print_fit/threaded_reflector_exploded_thread_detail.png)
+![Exploded view showing the male thread ridges and holder socket](artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_exploded_thread_detail.png)
 
 ## Artifact Versions
 
 | Version | Folder | Summary |
 | --- | --- | --- |
 | v1 | `artifacts/v1_20mm_threads/` | Previous 50 mm tube with `20 mm` threads at both ends, `10 mm` center body, `20 x 20 x 20 mm` reflector pocket, and earlier C-mount pitch assumption. |
-| v2 | `artifacts/v2_15mm_threads_print_fit/` | Current design: `15 mm` male threads on both ends, `20 mm` center body, max `20 mm` internal female thread, `20.4 x 20.4 x 20.4 mm` reflector pocket, and old-reference print-fit diameters. |
+| v2 | `artifacts/v2_15mm_threads_print_fit/` | Current design split into run folders. See `RUNS.md` in that folder. |
+
+## Run Folders
+
+| Run | Folder | Main purpose |
+| --- | --- | --- |
+| Printable assembly | `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/` | Finished STLs, renders, side/top sketches, envelope STEP, and final threaded STEP geometry. |
+| Editable decomposition | `artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/` | Latest run: separate tube base, male thread solids, holder objects, and female thread cutters for editable/Boolean CAD. |
+
+Single file to copy for the latest editable run:
+
+`artifacts/v2_15mm_threads_print_fit/2026-06-10_v2_editable_decomposition/threaded_reflector_full_decomposition.step`
+
+If you only need the finished assembled geometry, copy:
+
+`artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly_threaded.step`
 
 ## Design Intent
 
@@ -88,17 +103,17 @@ The holder wall is thicker than the requested minimum. The `28.4 mm` tube center
 - `analyze_reference_steps.py`: local helper for regenerating the old STEP solid measurement table.
 - `generate_support_artifacts.py`: STEP envelope, SVG, DXF, and PDF drawing generator.
 - `blender_render.py`: headless Blender render from the generated STL parts.
-- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube.stl`: printable threaded tube.
-- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder.stl`: printable reflector holder.
-- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly.stl`: assembly preview only.
-- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_threaded.step`: single STEP assembly containing both parts with modeled thread geometry.
-- `artifacts/v2_15mm_threads_print_fit/*_threaded.step`: individual threaded STEP parts.
-- `artifacts/v2_15mm_threads_print_fit/*_envelope.step`: smooth STEP envelope files for lightweight CAD review.
-- `artifacts/v2_15mm_threads_print_fit/*.svg`, `*.pdf`, `*.png`, `*.dxf`: support drawings.
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/male_male_cmount_tube.stl`: printable threaded tube.
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/top_open_reflector_holder.stl`: printable reflector holder.
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly.stl`: assembly preview only.
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly_threaded.step`: single STEP assembly containing both parts with modeled thread geometry.
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/*_threaded.step`: individual threaded STEP parts.
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/*_envelope.step`: smooth STEP envelope files for lightweight CAD review.
+- `artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/*.svg`, `*.pdf`, `*.png`, `*.dxf`: printable-run support drawings.
 
 ## Editable Decomposition Outputs
 
-The v2 folder also includes same-coordinate STEP parts for Boolean reconstruction and exploded STEP files for visual inspection.
+The latest editable decomposition run includes same-coordinate STEP parts for Boolean reconstruction and exploded STEP files for visual inspection.
 
 Tube recipe:
 
@@ -125,11 +140,11 @@ DWG is not generated because it is proprietary; use the DXF sketch for CAD impor
 ## Generate
 
 ```bash
-mkdir -p cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit
-openscad -D 'part="tube"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
-openscad -D 'part="holder"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
-openscad -D 'part="assembly"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
-openscad -D 'part="exploded"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/threaded_reflector_exploded.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+mkdir -p cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly
+openscad -D 'part="tube"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/male_male_cmount_tube.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="holder"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/top_open_reflector_holder.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="assembly"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_assembly.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="exploded"' -o cad/designs/cmount_threaded_reflector_assembly/artifacts/v2_15mm_threads_print_fit/2026-06-09_v2_printable_assembly/threaded_reflector_exploded.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
 cad/.conda/cad-python/bin/python cad/designs/cmount_threaded_reflector_assembly/generate_support_artifacts.py
 blender --background --python cad/designs/cmount_threaded_reflector_assembly/blender_render.py
 cad/.conda/cad-python/bin/python cad/designs/cmount_threaded_reflector_assembly/analyze_reference_steps.py

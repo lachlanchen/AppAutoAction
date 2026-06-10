@@ -6,7 +6,7 @@ import bpy
 
 
 ROOT = Path(__file__).resolve().parent
-ARTIFACTS = ROOT / "artifacts" / "v2_15mm_threads_print_fit"
+ARTIFACTS = ROOT / "artifacts" / "v2_15mm_threads_print_fit" / "2026-06-09_v2_printable_assembly"
 TUBE_STL = ARTIFACTS / "male_male_cmount_tube.stl"
 HOLDER_STL = ARTIFACTS / "top_open_reflector_holder.stl"
 PNG = ARTIFACTS / "threaded_reflector_assembly_render.png"
