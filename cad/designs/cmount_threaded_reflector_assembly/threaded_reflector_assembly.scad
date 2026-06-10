@@ -3,7 +3,7 @@
 
 $fn = 128;
 
-part = "assembly"; // tube | holder | assembly | exploded
+part = "assembly"; // tube | holder | assembly | exploded | tube_base | tube_left_thread | tube_right_thread | tube_decomposed | holder_base | holder_smooth_bore | holder_thread_cutter | holder_decomposed
 
 // Old 4f design print-fit evidence:
 // - Thread camera 24.4 in OpenHI B/C is the printed male root/fit diameter.
@@ -97,29 +97,27 @@ module threaded_bore_cutter_x(x0, length) {
     }
 }
 
+module male_male_tube_base_no_threads() {
+    right_thread_x = tube_total_length - tube_thread_length;
+
+    difference() {
+        union() {
+            x_cylinder(printed_male_root_d, tube_thread_length + join_overlap, 0);
+            x_cylinder(tube_body_d, tube_body_length + 2 * join_overlap, tube_thread_length - join_overlap);
+            x_cylinder(printed_male_root_d, tube_thread_length + join_overlap, right_thread_x - join_overlap);
+        }
+
+        x_cylinder(bore_d + clearance, tube_total_length + 2, -1);
+    }
+}
+
 module male_male_tube() {
     right_thread_x = tube_total_length - tube_thread_length;
 
     difference() {
         union() {
-            x_cylinder(
-                printed_male_root_d,
-                tube_thread_length + join_overlap,
-                0
-            );
+            male_male_tube_base_no_threads();
             external_thread_x(0, tube_thread_length, printed_male_root_d, false);
-
-            x_cylinder(
-                tube_body_d,
-                tube_body_length + 2 * join_overlap,
-                tube_thread_length - join_overlap
-            );
-
-            x_cylinder(
-                printed_male_root_d,
-                tube_thread_length + join_overlap,
-                right_thread_x - join_overlap
-            );
             external_thread_x(right_thread_x, tube_thread_length, printed_male_root_d, true);
         }
 
@@ -127,30 +125,49 @@ module male_male_tube() {
     }
 }
 
+module holder_cube_shell(x0=0) {
+    box_left_x = x0 + holder_socket_length;
+
+    cube_at(box_left_x, -holder_box_outer_y / 2, 0,
+        holder_box_outer_x, holder_box_outer_y, wall);
+    cube_at(box_left_x, -holder_box_outer_y / 2, wall,
+        holder_box_outer_x, wall, reflector_inner);
+    cube_at(box_left_x, holder_box_outer_y / 2 - wall, wall,
+        holder_box_outer_x, wall, reflector_inner);
+    cube_at(box_left_x + holder_box_inner_x, -holder_box_outer_y / 2, wall,
+        wall, holder_box_outer_y, reflector_inner);
+}
+
+module holder_socket_outer(x0=0) {
+    clipped_x_cylinder(holder_socket_outer_d, holder_socket_length + join_overlap,
+        x0, 0, axis_z + holder_socket_outer_d / 2);
+}
+
+module holder_reinforcement(x0=0) {
+    cube_at(x0, -holder_box_outer_y / 2, 0,
+        holder_socket_length + wall, holder_box_outer_y, wall);
+}
+
+module holder_base_solid(x0=0) {
+    union() {
+        holder_cube_shell(x0);
+        holder_socket_outer(x0);
+        holder_reinforcement(x0);
+    }
+}
+
+module holder_smooth_bore_base(x0=0) {
+    difference() {
+        holder_base_solid(x0);
+        x_cylinder(holder_female_bore_d + clearance, holder_socket_length + 1, x0 - 0.5);
+    }
+}
+
 module top_open_reflector_holder(x0=0) {
     socket_left_x = x0;
-    box_left_x = socket_left_x + holder_socket_length;
 
     difference() {
-        union() {
-            // Top-open, left-open reflector box.
-            cube_at(box_left_x, -holder_box_outer_y / 2, 0,
-                holder_box_outer_x, holder_box_outer_y, wall);
-            cube_at(box_left_x, -holder_box_outer_y / 2, wall,
-                holder_box_outer_x, wall, reflector_inner);
-            cube_at(box_left_x, holder_box_outer_y / 2 - wall, wall,
-                holder_box_outer_x, wall, reflector_inner);
-            cube_at(box_left_x + holder_box_inner_x, -holder_box_outer_y / 2, wall,
-                wall, holder_box_outer_y, reflector_inner);
-
-            // Female threaded socket opening from the left side of the holder.
-            clipped_x_cylinder(holder_socket_outer_d, holder_socket_length + join_overlap,
-                socket_left_x, 0, axis_z + holder_socket_outer_d / 2);
-
-            // Flat reinforcement tying the socket to the holder bottom plane.
-            cube_at(socket_left_x, -holder_box_outer_y / 2, 0,
-                holder_socket_length + wall, holder_box_outer_y, wall);
-        }
+        holder_base_solid(socket_left_x);
 
         threaded_bore_cutter_x(socket_left_x - 0.5, holder_socket_length + 1);
     }
@@ -160,6 +177,27 @@ if (part == "tube") {
     male_male_tube();
 } else if (part == "holder") {
     top_open_reflector_holder(0);
+} else if (part == "tube_base") {
+    male_male_tube_base_no_threads();
+} else if (part == "tube_left_thread") {
+    external_thread_x(0, tube_thread_length, printed_male_root_d, false);
+} else if (part == "tube_right_thread") {
+    external_thread_x(tube_total_length - tube_thread_length, tube_thread_length, printed_male_root_d, true);
+} else if (part == "tube_decomposed") {
+    color([0.20, 0.55, 0.95]) male_male_tube_base_no_threads();
+    color([0.95, 0.70, 0.20]) external_thread_x(0, tube_thread_length, printed_male_root_d, false);
+    color([0.95, 0.70, 0.20]) external_thread_x(tube_total_length - tube_thread_length, tube_thread_length, printed_male_root_d, true);
+} else if (part == "holder_base") {
+    holder_base_solid(0);
+} else if (part == "holder_smooth_bore") {
+    holder_smooth_bore_base(0);
+} else if (part == "holder_thread_cutter") {
+    threaded_bore_cutter_x(-0.5, holder_socket_length + 1);
+} else if (part == "holder_decomposed") {
+    color([0.35, 0.85, 0.55]) holder_cube_shell(0);
+    color([0.25, 0.75, 0.45]) holder_socket_outer(0);
+    color([0.25, 0.60, 0.35]) holder_reinforcement(0);
+    color([0.95, 0.40, 0.35]) threaded_bore_cutter_x(-0.5, holder_socket_length + 1);
 } else if (part == "exploded") {
     color([0.25, 0.60, 0.95]) male_male_tube();
     color([0.35, 0.85, 0.55]) top_open_reflector_holder(tube_total_length + 10);

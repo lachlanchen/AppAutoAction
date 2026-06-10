@@ -96,6 +96,30 @@ The holder wall is thicker than the requested minimum. The `28.4 mm` tube center
 - `artifacts/v2_15mm_threads_print_fit/*_envelope.step`: smooth STEP envelope files for lightweight CAD review.
 - `artifacts/v2_15mm_threads_print_fit/*.svg`, `*.pdf`, `*.png`, `*.dxf`: support drawings.
 
+## Editable Decomposition Outputs
+
+The v2 folder also includes same-coordinate STEP parts for Boolean reconstruction and exploded STEP files for visual inspection.
+
+Tube recipe:
+
+- `male_male_cmount_tube_decomposed.step`: named STEP assembly with `tube_base_no_threads`, `left_male_thread_add`, and `right_male_thread_add` in the correct coordinates.
+- `male_male_cmount_tube_decomposed_exploded.step`: same three objects offset for inspection.
+- `tube_base_no_threads.step/.stl`: hollow tube body without thread ridges.
+- `tube_left_male_thread.step/.stl` and `tube_right_male_thread.step/.stl`: standalone male thread solids. The STL files are exported from OpenSCAD so the twisted thread ends are capped and watertight.
+
+Holder recipe:
+
+- `top_open_reflector_holder_boolean_recipe.step`: shows `holder_base_solid_before_subtraction`, `holder_smooth_bore_base`, `female_thread_cutter_subtract`, and `threaded_holder_result`.
+- `top_open_reflector_holder_decomposed.step`: same-coordinate separate objects for the cube shell, socket cylinder, bottom reinforcement, bore cutter, and female thread cutter.
+- `top_open_reflector_holder_decomposed_exploded.step`: offset version for inspection.
+- `holder_smooth_bore_base.step/.stl - holder_female_thread_cutter.step/.stl = top_open_reflector_holder_threaded.step`.
+- `holder_full_thread_cutter.step/.stl`: combined bore plus female thread cutter for subtracting from the fully solid holder base.
+
+Sketches:
+
+- `thread_profile_sketch.svg/.pdf/.png`: triangular tooth profile, `0.8 mm` base/pitch and `0.4 mm` height.
+- `decomposition_recipe_sketch.svg/.pdf/.png`: visual recipe for adding the tube threads and subtracting the holder female thread cutter.
+
 DWG is not generated because it is proprietary; use the DXF sketch for CAD import.
 
 ## Generate
@@ -112,3 +136,13 @@ cad/.conda/cad-python/bin/python cad/designs/cmount_threaded_reflector_assembly/
 ```
 
 Print the tube and holder as separate parts. Use the assembly STL only as a visual fit check.
+
+Useful OpenSCAD decomposition switches:
+
+```bash
+openscad -D 'part="tube_base"' -o /tmp/tube_base.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="tube_left_thread"' -o /tmp/tube_left_thread.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="tube_right_thread"' -o /tmp/tube_right_thread.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="holder_smooth_bore"' -o /tmp/holder_smooth_bore.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+openscad -D 'part="holder_thread_cutter"' -o /tmp/holder_thread_cutter.stl cad/designs/cmount_threaded_reflector_assembly/threaded_reflector_assembly.scad
+```

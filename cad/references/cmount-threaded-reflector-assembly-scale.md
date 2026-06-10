@@ -94,5 +94,22 @@ Support files:
 - `artifacts/v2_15mm_threads_print_fit/assembly_side_section.svg`
 - `artifacts/v2_15mm_threads_print_fit/assembly_top_view.svg`
 - `artifacts/v2_15mm_threads_print_fit/threaded_reflector_assembly_top_sketch.dxf`
+- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube_decomposed.step`
+- `artifacts/v2_15mm_threads_print_fit/male_male_cmount_tube_decomposed_exploded.step`
+- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_boolean_recipe.step`
+- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_decomposed.step`
+- `artifacts/v2_15mm_threads_print_fit/top_open_reflector_holder_decomposed_exploded.step`
+- `artifacts/v2_15mm_threads_print_fit/threaded_reflector_full_decomposition.step`
+- `artifacts/v2_15mm_threads_print_fit/tube_left_male_thread.step`
+- `artifacts/v2_15mm_threads_print_fit/tube_right_male_thread.step`
+- `artifacts/v2_15mm_threads_print_fit/holder_female_thread_cutter.step`
+- `artifacts/v2_15mm_threads_print_fit/thread_profile_sketch.svg`
+- `artifacts/v2_15mm_threads_print_fit/decomposition_recipe_sketch.svg`
 
 Use STL for printing because it is generated directly from the printable OpenSCAD thread geometry. Use `threaded_reflector_assembly_threaded.step` when a single STEP file with both threaded parts is needed. The envelope STEP files are intentionally smooth and lightweight.
+
+For editable CAD, use the decomposition STEP files:
+
+- Tube: `tube_base_no_threads + tube_left_male_thread + tube_right_male_thread`.
+- Holder: `holder_smooth_bore_base - holder_female_thread_cutter = threaded holder`.
+- If starting from a fully solid holder base, subtract `holder_full_thread_cutter`, which includes the smooth bore plus the female thread cutter.
