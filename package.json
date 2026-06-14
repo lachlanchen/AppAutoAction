@@ -1,9 +1,10 @@
 {
-  "name": "@lazyingart/app-auto-action",
+  "name": "@lazyingart/labcanvas",
   "version": "0.1.0",
-  "description": "Agent routing for Blender, BioRender, Unity, Unreal, and scientific figure tooling.",
+  "description": "AgInTi LabCanvas: agentic studio for editable scientific figures, CAD devices, and experiment design.",
   "type": "commonjs",
   "bin": {
+    "labcanvas": "bin/labcanvas.js",
     "app-auto-action": "bin/app-auto-action.js",
     "agenticapp": "bin/agenticapp.js"
   },
@@ -23,7 +24,7 @@
     "pyproject.toml"
   ],
   "scripts": {
-    "check": "node --check bin/app-auto-action.js && node --check bin/agenticapp.js && node --check scripts/npm-publish-from-env.js && node --check scripts/npm-release.js && node --check src/agenticapp/web/static/app.js",
+    "check": "node --check bin/labcanvas.js && node --check bin/app-auto-action.js && node --check bin/agenticapp.js && node --check scripts/npm-publish-from-env.js && node --check scripts/npm-release.js && node --check src/agenticapp/web/static/app.js",
     "test": "npm run check && PYTHONPATH=src python -m unittest discover -s tests",
     "pack:dry-run": "npm pack --dry-run",
     "release:npm": "node scripts/npm-release.js",
@@ -41,6 +42,9 @@
     "unreal",
     "openscad",
     "scientific-figures",
+    "labcanvas",
+    "paper-figures",
+    "cad",
     "agintiflow"
   ],
   "author": "LazyingArt LLC",
@@ -48,10 +52,10 @@
   "homepage": "https://lazying.art",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lachlanchen/AppAutoAction.git"
+    "url": "git+https://github.com/lachlanchen/AgInTi-LabCanvas.git"
   },
   "bugs": {
-    "url": "https://github.com/lachlanchen/AppAutoAction/issues"
+    "url": "https://github.com/lachlanchen/AgInTi-LabCanvas/issues"
   },
   "engines": {
     "node": ">=18",

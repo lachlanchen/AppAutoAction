@@ -27,7 +27,7 @@ LOCAL_GITIGNORE = OUT_DIR / ".gitignore"
 
 
 def uid(name: str) -> str:
-    return str(uuid.uuid5(uuid.NAMESPACE_URL, f"lazyingart:appautoaction:{BOARD_NAME}:{name}"))
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, f"lazyingart:labcanvas:{BOARD_NAME}:{name}"))
 
 
 def fp_text(name: str, value: str, at: str, layer: str, hide: bool = False) -> str:
@@ -62,7 +62,7 @@ def board_text() -> str:
     connector_model = "/usr/share/kicad/3dmodels/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x02_P2.54mm_Horizontal.step"
     return f"""(kicad_pcb
 \t(version 20240108)
-\t(generator "appautoaction-hybec-halogen-generator")
+\t(generator "labcanvas-hybec-halogen-generator")
 \t(generator_version "1.0")
 \t(general
 \t\t(thickness 1.6)
@@ -181,7 +181,7 @@ def fp_lib_table_text() -> str:
 def custom_lamp_footprint_text() -> str:
     return f"""(footprint "HYBEC_HBL_273_G4_DirectPins"
 \t(version 20240108)
-\t(generator "appautoaction-hybec-halogen-generator")
+\t(generator "labcanvas-hybec-halogen-generator")
 \t(generator_version "1.0")
 \t(layer "F.Cu")
 \t(descr "Direct through-hole carrier for HYBEC HBL-273/HBL-667 12V20W G4 tungsten halogen lamp pins")
@@ -207,7 +207,7 @@ def custom_lamp_footprint_text() -> str:
 def schematic_text() -> str:
     return f"""(kicad_sch
 \t(version 20231120)
-\t(generator "appautoaction-hybec-halogen-generator")
+\t(generator "labcanvas-hybec-halogen-generator")
 \t(generator_version "1.0")
 \t(uuid "{uid("schematic")}")
 \t(paper "A4")

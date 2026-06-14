@@ -2,7 +2,7 @@
 
 Research date: 2026-06-02
 
-This brief summarizes the current GitHub and vendor landscape for agent-controlled Blender, BioRender, Unity, and Unreal workflows. The goal is to justify AppAutoAction's registry-plus-adapter design instead of binding the project to one editor plugin.
+This brief summarizes the current GitHub and vendor landscape for agent-controlled Blender, BioRender, Unity, and Unreal workflows. The goal is to justify AgInTi LabCanvas's registry-plus-adapter design instead of binding the project to one editor plugin.
 
 Related hardware roadmap: [Hybrid Electron-Microscopy Sensor Roadmap](HYBRID_EM_SENSOR_ROADMAP.md).
 
@@ -12,11 +12,11 @@ MCP has become the common integration shape for AI agents that need external cap
 
 The practical landscape is fragmented. Blender, Unity, and Unreal each have working community bridges, but they differ in ports, transports, installation flows, and safety assumptions. BioRender is different: its current public path is an official remote MCP connector that supports natural-language search of icons and templates through compatible AI assistants.
 
-AppAutoAction should therefore remain a control hub rather than a monolithic replacement for those bridges.
+AgInTi LabCanvas should therefore remain a control hub rather than a monolithic replacement for those bridges.
 
 ## Findings by Target
 
-| Target | Evidence | Implication for AppAutoAction |
+| Target | Evidence | Implication for AgInTi LabCanvas |
 | --- | --- | --- |
 | MCP standard | MCP servers expose tools, resources, and prompts with schema-defined tool calls and user/application control boundaries. Source: https://modelcontextprotocol.io/docs/learn/server-concepts | Keep dispatch envelopes explicit and emit MCP config instead of inventing a competing protocol. |
 | Blender | `sandraschi/blender-mcp` supports natural-language Blender automation, headless operation, live GUI bridge mode, exports, rendering, and asset workflows. Source: https://github.com/sandraschi/blender-mcp | Support both local HTTP and command dispatch; do not require the Blender UI for every workflow. |
@@ -31,7 +31,7 @@ AppAutoAction should therefore remain a control hub rather than a monolithic rep
 
 ## Recommended Direction
 
-1. Keep AppAutoAction as a neutral dispatcher and metadata hub.
+1. Keep AgInTi LabCanvas as a neutral dispatcher and metadata hub.
 2. Support MCP config generation for existing bridge projects.
 3. Add transport adapters incrementally: HTTP JSON, local command, browser handoff, then native MCP client/server modes.
 4. Add target capability discovery after a bridge reports structured tools.

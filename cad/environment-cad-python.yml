@@ -1,4 +1,4 @@
-name: appautoaction-cad
+name: labcanvas-cad
 channels:
   - conda-forge
 dependencies:

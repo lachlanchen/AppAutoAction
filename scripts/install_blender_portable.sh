@@ -5,7 +5,7 @@ VERSION="${BLENDER_VERSION:-4.0.2}"
 MAJOR_MINOR="${VERSION%.*}"
 ARCHIVE="blender-${VERSION}-linux-x64.tar.xz"
 URL="https://download.blender.org/release/Blender${MAJOR_MINOR}/${ARCHIVE}"
-INSTALL_ROOT="${APPAUTOACTION_BLENDER_HOME:-$HOME/.local/share/appautoaction/blender}"
+INSTALL_ROOT="${LABCANVAS_BLENDER_HOME:-${APPAUTOACTION_BLENDER_HOME:-$HOME/.local/share/labcanvas/blender}}"
 INSTALL_DIR="$INSTALL_ROOT/blender-${VERSION}-linux-x64"
 DOWNLOAD="$INSTALL_ROOT/$ARCHIVE"
 

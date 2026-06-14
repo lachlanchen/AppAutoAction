@@ -1,9 +1,9 @@
 # Scene Specs For 3D Experiment Design
 
-AppAutoAction can render paper-ready 3D setup diagrams from JSON scene specs. This turns an agent workflow such as "draw my optical bench" into a repeatable file-based process:
+AgInTi LabCanvas can render paper-ready 3D setup diagrams from JSON scene specs. This turns an agent workflow such as "draw my optical bench" into a repeatable file-based process:
 
 ```text
-scene spec JSON -> AppAutoAction CLI -> Blender headless -> PNG + .blend
+scene spec JSON -> LabCanvas CLI -> Blender headless -> PNG + .blend
 ```
 
 ## Commands
@@ -11,19 +11,19 @@ scene spec JSON -> AppAutoAction CLI -> Blender headless -> PNG + .blend
 Create a starter spec:
 
 ```bash
-app-auto-action scene-template experiment-setup --output my-setup.scene.json
+labcanvas scene-template experiment-setup --output my-setup.scene.json
 ```
 
 Preview the render plan without launching Blender:
 
 ```bash
-app-auto-action render-scene examples/paper-optics-setup.scene.json --dry-run
+labcanvas render-scene examples/paper-optics-setup.scene.json --dry-run
 ```
 
 Render the scene:
 
 ```bash
-app-auto-action render-scene examples/paper-optics-setup.scene.json --output-dir examples/renders
+labcanvas render-scene examples/paper-optics-setup.scene.json --output-dir examples/renders
 ```
 
 The renderer looks for Blender in this order:
@@ -31,7 +31,7 @@ The renderer looks for Blender in this order:
 1. `--blender-bin`
 2. `BLENDER_BIN`
 3. `blender` on `PATH`
-4. `~/.local/share/appautoaction/blender/blender-4.0.2-linux-x64/blender`
+4. `~/.local/share/labcanvas/blender/blender-4.0.2-linux-x64/blender`
 
 Use `scripts/install_blender_portable.sh` for a no-sudo local Blender install.
 

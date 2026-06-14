@@ -43,7 +43,7 @@ def build_envelope(target: Target, instruction: str, payload: dict[str, Any] | N
         "instruction": instruction,
         "payload": payload or {},
         "metadata": {
-            "source": "agenticapp",
+            "source": "labcanvas",
             "created_at": datetime.now(timezone.utc).isoformat(),
         },
     }

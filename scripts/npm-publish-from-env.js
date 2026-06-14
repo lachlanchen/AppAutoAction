@@ -7,7 +7,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const repoRoot = path.resolve(__dirname, "..");
-const envPath = path.resolve(repoRoot, process.env.APPAUTOACTION_NPM_ENV || ".env");
+const envPath = path.resolve(repoRoot, process.env.LABCANVAS_NPM_ENV || process.env.APPAUTOACTION_NPM_ENV || ".env");
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 
 function parseDotenv(text = "") {
@@ -59,7 +59,7 @@ async function main() {
     process.exit(1);
   }
 
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "appautoaction-npmrc-"));
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "labcanvas-npmrc-"));
   const npmrcPath = path.join(tempDir, ".npmrc");
   try {
     const host = registryHost(registry);

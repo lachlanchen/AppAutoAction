@@ -1,6 +1,6 @@
 # CAD Workspace
 
-This folder collects local optical-mechanical reference CAD, parametric adapter designs, and manufacturing notes for AppAutoAction-assisted experiment hardware.
+This folder collects local optical-mechanical reference CAD, parametric adapter designs, and manufacturing notes for AgInTi LabCanvas-assisted experiment hardware.
 
 ## Local Reference STEP Sets
 

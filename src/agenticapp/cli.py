@@ -29,9 +29,12 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="agenticapp", description="Route agent instructions to design-tool targets.")
-    parser.add_argument("--version", action="version", version=f"agenticapp {__version__}")
-    parser.add_argument("--config", help="Path to target registry JSON. Defaults to agenticapp.targets.json or configs/targets.example.json.")
+    parser = argparse.ArgumentParser(prog="labcanvas", description="Route agent instructions to design-tool targets.")
+    parser.add_argument("--version", action="version", version=f"labcanvas {__version__}")
+    parser.add_argument(
+        "--config",
+        help="Path to target registry JSON. Defaults to labcanvas.targets.json, agenticapp.targets.json, or configs/targets.example.json.",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     list_parser = subparsers.add_parser("list", help="List configured targets.")
@@ -76,7 +79,7 @@ def build_parser() -> argparse.ArgumentParser:
     webapp_parser.add_argument("action", nargs="?", default="status", choices=["start", "stop", "restart", "status"], help="Web app action.")
     webapp_parser.add_argument("--host", default="127.0.0.1", help="Bind host. Default: 127.0.0.1.")
     webapp_parser.add_argument("--port", type=int, default=19473, help="Preferred high port for tmux web app. Default: 19473.")
-    webapp_parser.add_argument("--session", default="appautoaction-web", help="tmux session name. Default: appautoaction-web.")
+    webapp_parser.add_argument("--session", default="labcanvas-web", help="tmux session name. Default: labcanvas-web.")
     webapp_parser.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
     webapp_parser.set_defaults(func=cmd_webapp)
 

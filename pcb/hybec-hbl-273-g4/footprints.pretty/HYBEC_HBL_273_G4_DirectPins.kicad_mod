@@ -1,6 +1,6 @@
 (footprint "HYBEC_HBL_273_G4_DirectPins"
 	(version 20240108)
-	(generator "appautoaction-hybec-halogen-generator")
+	(generator "labcanvas-hybec-halogen-generator")
 	(generator_version "1.0")
 	(layer "F.Cu")
 	(descr "Direct through-hole carrier for HYBEC HBL-273/HBL-667 12V20W G4 tungsten halogen lamp pins")

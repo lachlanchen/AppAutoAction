@@ -1,1 +1,1 @@
-"""Blender-side render scripts for AppAutoAction scene specs."""
+"""Blender-side render scripts for AgInTi LabCanvas scene specs."""

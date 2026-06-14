@@ -11,7 +11,8 @@ class NpmPackageTests(unittest.TestCase):
     def test_package_manifest_exposes_cli_bins(self):
         package = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
 
-        self.assertEqual(package["name"], "@lazyingart/app-auto-action")
+        self.assertEqual(package["name"], "@lazyingart/labcanvas")
+        self.assertEqual(package["bin"]["labcanvas"], "bin/labcanvas.js")
         self.assertEqual(package["bin"]["app-auto-action"], "bin/app-auto-action.js")
         self.assertEqual(package["bin"]["agenticapp"], "bin/agenticapp.js")
         self.assertIn("src/agenticapp/**/*.py", package["files"])
@@ -20,7 +21,7 @@ class NpmPackageTests(unittest.TestCase):
         self.assertIn("examples/", package["files"])
 
     def test_npm_bin_wrappers_are_executable_and_set_pythonpath(self):
-        wrapper = ROOT / "bin" / "app-auto-action.js"
+        wrapper = ROOT / "bin" / "labcanvas.js"
         mode = wrapper.stat().st_mode
         text = wrapper.read_text(encoding="utf-8")
 

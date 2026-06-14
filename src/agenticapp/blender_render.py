@@ -19,6 +19,7 @@ def find_blender(explicit: str | None = None) -> str | None:
         explicit,
         os.environ.get("BLENDER_BIN"),
         shutil.which("blender"),
+        str(Path.home() / ".local/share/labcanvas/blender/blender-4.0.2-linux-x64/blender"),
         str(Path.home() / ".local/share/appautoaction/blender/blender-4.0.2-linux-x64/blender"),
     ]
     for candidate in candidates:

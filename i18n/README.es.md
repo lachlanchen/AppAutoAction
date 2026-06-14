@@ -2,24 +2,24 @@
 
 <p align="center">
   <a href="https://lazying.art"><img alt="Homepage" src="https://img.shields.io/badge/home-lazying.art-111827?style=for-the-badge"></a>
-  <a href="https://github.com/lachlanchen/AppAutoAction/actions"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/lachlanchen/AppAutoAction/test.yml?branch=master&style=for-the-badge&label=tests"></a>
+  <a href="https://github.com/lachlanchen/AgInTi-LabCanvas/actions"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/lachlanchen/AgInTi-LabCanvas/test.yml?branch=master&style=for-the-badge&label=tests"></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=for-the-badge">
   <img alt="MCP" src="https://img.shields.io/badge/MCP-ready-0F766E?style=for-the-badge">
 </p>
 
-<h1 align="center">AppAutoAction</h1>
+<h1 align="center">AgInTi LabCanvas</h1>
 
 <p align="center">
   Enrutamiento de agentes para Blender, BioRender, Unity, Unreal y herramientas creativas o científicas.
 </p>
 
 <p align="center">
-  <img src="../docs/assets/appautoaction-vspice-studio.png" alt="Estudio AppAutoAction con una tarea V-SPICE y artefactos de Blender/OpenSCAD" width="1100">
+  <img src="../docs/assets/aginti-labcanvas-vspice-studio.png" alt="Estudio AgInTi LabCanvas con una tarea V-SPICE y artefactos de Blender/OpenSCAD" width="1100">
 </p>
 
 ## Por Qué Existe
 
-AppAutoAction ofrece a Codex, AgInTiFlow, Claude y otros agentes compatibles con MCP un plano de control práctico para automatizar aplicaciones. Mantiene los destinos en un registro explícito, valida la configuración y envía sobres JSON revisables al adaptador correcto.
+AgInTi LabCanvas ofrece a Codex, AgInTiFlow, Claude y otros agentes compatibles con MCP un plano de control práctico para automatizar aplicaciones. Mantiene los destinos en un registro explícito, valida la configuración y envía sobres JSON revisables al adaptador correcto.
 
 ## Inicio Rápido
 
@@ -34,8 +34,8 @@ PYTHONPATH=src python -m unittest discover -s tests
 Tras instalar el paquete:
 
 ```bash
-app-auto-action studio figure-grid "optical device icons 2x3" --rows 2 --cols 3
-app-auto-action webapp start --port 19473
+labcanvas studio figure-grid "optical device icons 2x3" --rows 2 --cols 3
+labcanvas webapp start --port 19473
 ```
 
 ## Estudio de Figuras
@@ -47,9 +47,9 @@ Consulta [PAPER_FIGURE_STUDIO.md](../docs/PAPER_FIGURE_STUDIO.md), [STUDIO_CLI.m
 ## Diseño 3D de Experimentos
 
 ```bash
-app-auto-action scene-template experiment-setup --output my-setup.scene.json
-app-auto-action render-scene my-setup.scene.json --dry-run
-app-auto-action render-scene my-setup.scene.json --output-dir output/scenes
+labcanvas scene-template experiment-setup --output my-setup.scene.json
+labcanvas render-scene my-setup.scene.json --dry-run
+labcanvas render-scene my-setup.scene.json --output-dir output/scenes
 ```
 
 La fuente de verdad es una especificación JSON. Blender se ejecuta sin interfaz y produce una vista previa `.png` y un archivo `.blend`. Empieza con [paper-optics-setup.scene.json](../examples/paper-optics-setup.scene.json).

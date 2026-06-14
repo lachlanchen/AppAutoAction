@@ -1,1 +1,1 @@
-"""Local web app for AppAutoAction."""
+"""Local web app for AgInTi LabCanvas."""

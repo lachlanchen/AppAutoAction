@@ -1,6 +1,6 @@
 # Paper Figure Studio
 
-The web app turns AppAutoAction into a small studio for academic setup figures. It uses a bright theme by default, with a top-bar toggle for dark mode. The studio combines deterministic layout, 3D rendering, CAD export, and backend handoff without requiring API keys for the local demo.
+The web app turns AgInTi LabCanvas into a small studio for academic setup figures. It uses a bright theme by default, with a top-bar toggle for dark mode. The studio combines deterministic layout, 3D rendering, CAD export, and backend handoff without requiring API keys for the local demo.
 
 The long-term figure rule is documented in [EDITABLE_FIGURE_PIPELINE.md](EDITABLE_FIGURE_PIPELINE.md): generate an overview image only as a concept, then turn it into editable atomic parts assembled from source artifacts.
 The matching terminal workflow is documented in [STUDIO_CLI.md](STUDIO_CLI.md).
@@ -65,7 +65,7 @@ Store credentials in an environment variable such as `BIORENDER_API_KEY`; the we
 | OpenSCAD | Active local export workflow | Produces a simplified `.scad` layout proxy. |
 | AgInTi image generation | Active dry-run workflow by default | Writes redacted prompts, request payloads, and manifests; live image calls need provider keys. |
 | BioRender | Configured MCP handoff | Uses the official remote MCP endpoint and browser handoff; credentials stay in env vars. |
-| Unity/Unreal/other registry targets | Studio dry-run dispatch plus CLI/registry support | Add endpoints in `agenticapp.targets.json`; the Backends panel can dry-run any configured target and save the result to the canvas. |
+| Unity/Unreal/other registry targets | Studio dry-run dispatch plus CLI/registry support | Add endpoints in `labcanvas.targets.json`; the Backends panel can dry-run any configured target and save the result to the canvas. |
 
 ## OpenSCAD And Blender
 

@@ -63,7 +63,7 @@ class WebAppTests(unittest.TestCase):
         thread.start()
         try:
             host, port = server.server_address
-            with request.urlopen(f"http://{host}:{port}/static/appautoaction-logo.svg", timeout=3) as response:
+            with request.urlopen(f"http://{host}:{port}/static/labcanvas-logo.svg", timeout=3) as response:
                 body = response.read().decode("utf-8")
                 content_type = response.headers["Content-Type"]
         finally:
@@ -81,7 +81,7 @@ class WebAppTests(unittest.TestCase):
 
         self.assertIn('id="localeSelect"', html)
         self.assertNotIn(">Language</", html)
-        self.assertIn('src="/static/appautoaction-logo.svg"', html)
+        self.assertIn('src="/static/labcanvas-logo.svg"', html)
         self.assertIn("Powered by", html)
         self.assertIn("LazyingArt LLC", html)
         for locale in expected:

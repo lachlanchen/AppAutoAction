@@ -8,7 +8,7 @@ Date: 2026-06-08
 - KiCad CLI: `kicad-cli` in `PATH`
 - Python for `pcbnew`: `/usr/bin/python3` or a venv created with `--system-site-packages`
 - Installed MCP server: `Seeed-Studio/kicad-mcp-server`
-- Local path: `/home/lachlan/.local/share/appautoaction/mcp/kicad-mcp-server`
+- Local path: `/home/lachlan/.local/share/labcanvas/mcp/kicad-mcp-server`
 - Verified revision: `748de12`
 
 MCP command shape:
@@ -18,9 +18,9 @@ MCP command shape:
   "mcpServers": {
     "kicad": {
       "type": "stdio",
-      "command": "/home/lachlan/.local/share/appautoaction/mcp/kicad-mcp-server/.venv/bin/python",
+      "command": "/home/lachlan/.local/share/labcanvas/mcp/kicad-mcp-server/.venv/bin/python",
       "args": ["-m", "kicad_mcp_server"],
-      "cwd": "/home/lachlan/.local/share/appautoaction/mcp/kicad-mcp-server"
+      "cwd": "/home/lachlan/.local/share/labcanvas/mcp/kicad-mcp-server"
     }
   }
 }
@@ -29,9 +29,9 @@ MCP command shape:
 Install pattern used:
 
 ```bash
-git clone https://github.com/Seeed-Studio/kicad-mcp-server ~/.local/share/appautoaction/mcp/kicad-mcp-server
-/usr/bin/python3 -m venv --system-site-packages ~/.local/share/appautoaction/mcp/kicad-mcp-server/.venv
-~/.local/share/appautoaction/mcp/kicad-mcp-server/.venv/bin/python -m pip install -e ~/.local/share/appautoaction/mcp/kicad-mcp-server
+git clone https://github.com/Seeed-Studio/kicad-mcp-server ~/.local/share/labcanvas/mcp/kicad-mcp-server
+/usr/bin/python3 -m venv --system-site-packages ~/.local/share/labcanvas/mcp/kicad-mcp-server/.venv
+~/.local/share/labcanvas/mcp/kicad-mcp-server/.venv/bin/python -m pip install -e ~/.local/share/labcanvas/mcp/kicad-mcp-server
 ```
 
 ## GitHub Options

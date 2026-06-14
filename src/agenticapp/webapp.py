@@ -45,7 +45,7 @@ def create_server(host: str = "127.0.0.1", port: int = 8787) -> ThreadingHTTPSer
         bind_port = 0
     else:
         bind_port = first_available_port(host, port)
-    return ThreadingHTTPServer((host, bind_port), AppAutoActionHandler)
+    return ThreadingHTTPServer((host, bind_port), LabCanvasHandler)
 
 
 def first_available_port(host: str, start: int) -> int:
@@ -59,7 +59,7 @@ def first_available_port(host: str, start: int) -> int:
     raise OSError(f"No free port found from {start} to {start + 49}")
 
 
-class AppAutoActionHandler(BaseHTTPRequestHandler):
+class LabCanvasHandler(BaseHTTPRequestHandler):
     storage_dir = ROOT / "output" / "webapp"
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API.

@@ -2,17 +2,17 @@
 
 <p align="center">
   <a href="https://lazying.art"><img alt="Homepage" src="https://img.shields.io/badge/home-lazying.art-111827?style=for-the-badge"></a>
-  <a href="https://www.npmjs.com/package/@lazyingart/app-auto-action"><img alt="npm" src="https://img.shields.io/npm/v/@lazyingart/app-auto-action?style=for-the-badge&label=npm"></a>
-  <a href="https://github.com/lachlanchen/AppAutoAction/actions"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/lachlanchen/AppAutoAction/test.yml?branch=master&style=for-the-badge&label=tests"></a>
+  <a href="https://www.npmjs.com/package/@lazyingart/labcanvas"><img alt="npm" src="https://img.shields.io/npm/v/@lazyingart/labcanvas?style=for-the-badge&label=npm"></a>
+  <a href="https://github.com/lachlanchen/AgInTi-LabCanvas/actions"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/lachlanchen/AgInTi-LabCanvas/test.yml?branch=master&style=for-the-badge&label=tests"></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=for-the-badge">
   <img alt="MCP" src="https://img.shields.io/badge/MCP-ready-0F766E?style=for-the-badge">
 </p>
 
-<h1 align="center">AppAutoAction</h1>
+<h1 align="center">AgInTi LabCanvas</h1>
 
 <p align="center">
   Agent routing for Blender, BioRender, Unity, Unreal, and future creative tools.
-  AppAutoAction gives Codex, AgInTiFlow, Claude, local LLMs, and other MCP-aware agents one practical control plane for app automation.
+  AgInTi LabCanvas gives Codex, AgInTiFlow, Claude, local LLMs, and other MCP-aware agents one practical control plane for app automation.
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/appautoaction-vspice-studio.png" alt="AppAutoAction Paper Figure Studio showing a V-SPICE chat task with OpenSCAD, Blender, and rendered canvas artifacts" width="1100">
+  <img src="docs/assets/aginti-labcanvas-vspice-studio.png" alt="AgInTi LabCanvas Paper Figure Studio showing a V-SPICE chat task with OpenSCAD, Blender, and rendered canvas artifacts" width="1100">
 </p>
 
 <p align="center">
@@ -34,7 +34,7 @@
 
 ## Why This Exists
 
-Creative tools are gaining agent bridges, but each bridge has a different install path, port, protocol, and safety model. AppAutoAction keeps those targets in one registry, validates them, emits MCP client config, and dispatches dry-run or live JSON envelopes to the right adapter.
+Creative tools are gaining agent bridges, but each bridge has a different install path, port, protocol, and safety model. AgInTi LabCanvas keeps those targets in one registry, validates them, emits MCP client config, and dispatches dry-run or live JSON envelopes to the right adapter.
 
 It is intentionally small: Python standard library, explicit config, no hidden editor automation.
 
@@ -43,9 +43,9 @@ It is intentionally small: Python standard library, explicit config, no hidden e
 Install from npm:
 
 ```bash
-npm install -g @lazyingart/app-auto-action
-app-auto-action --version
-app-auto-action webapp start --port 19473
+npm install -g @lazyingart/labcanvas
+labcanvas --version
+labcanvas webapp start --port 19473
 ```
 
 Or run from a source checkout:
@@ -62,16 +62,16 @@ PYTHONPATH=src python -m unittest discover -s tests
 After installation, the console command is also available as:
 
 ```bash
-app-auto-action list
-app-auto-action dispatch unity "Create a test scene with three labeled cubes" --dry-run
-app-auto-action studio figure-grid "optical device icons 2x3" --rows 2 --cols 3
-app-auto-action webapp start --port 19473
+labcanvas list
+labcanvas dispatch unity "Create a test scene with three labeled cubes" --dry-run
+labcanvas studio figure-grid "optical device icons 2x3" --rows 2 --cols 3
+labcanvas webapp start --port 19473
 ```
 
 ## Paper Figure Studio
 
 ```bash
-app-auto-action web --port 8787 --open
+labcanvas web --port 8787 --open
 ```
 
 The web app now has a bright-by-default theme, chat panel, artifact canvas, scene editor, and backend settings. It can:
@@ -94,13 +94,13 @@ Artifacts are tracked under `output/webapp/artifacts.json` and served in the can
   <img src="examples/renders/paper-optics-setup.png" alt="Paper-ready optical experiment setup render" width="900">
 </p>
 
-AppAutoAction now includes a systematic Blender workflow for paper setup figures, optical benches, device concepts, and experiment design:
+AgInTi LabCanvas now includes a systematic Blender workflow for paper setup figures, optical benches, device concepts, and experiment design:
 
 ```bash
-app-auto-action web --port 8787 --open
-app-auto-action scene-template experiment-setup --output my-setup.scene.json
-app-auto-action render-scene my-setup.scene.json --dry-run
-app-auto-action render-scene my-setup.scene.json --output-dir output/scenes
+labcanvas web --port 8787 --open
+labcanvas scene-template experiment-setup --output my-setup.scene.json
+labcanvas render-scene my-setup.scene.json --dry-run
+labcanvas render-scene my-setup.scene.json --output-dir output/scenes
 ```
 
 The web app provides chat, JSON scene editing, dry-run planning, and render preview. The source of truth is a JSON scene spec. Blender runs headless and produces a `.png` preview plus a `.blend` scene. Start from [examples/paper-optics-setup.scene.json](examples/paper-optics-setup.scene.json), inspect the generated [example render](examples/renders/paper-optics-setup.png), or read [docs/WEBAPP.md](docs/WEBAPP.md) and [docs/SCENE_SPEC.md](docs/SCENE_SPEC.md).
@@ -113,11 +113,11 @@ For a no-sudo local Blender install and a real headless scene generation test:
 
 ```bash
 scripts/install_blender_portable.sh
-app-auto-action --config configs/blender-local-command.example.json doctor
-app-auto-action --config configs/blender-local-command.example.json dispatch blender "Draw a welcoming modern building with a tower"
+labcanvas --config configs/blender-local-command.example.json doctor
+labcanvas --config configs/blender-local-command.example.json dispatch blender "Draw a welcoming modern building with a tower"
 ```
 
-The command bridge is [bridges/codex_exec_blender.sh](bridges/codex_exec_blender.sh). It reads the AppAutoAction JSON envelope from stdin, runs Blender in background mode, stores Blender logs under `output/blender/`, and returns clean JSON with `.blend` and `.png` artifact paths.
+The command bridge is [bridges/codex_exec_blender.sh](bridges/codex_exec_blender.sh). It reads the AgInTi LabCanvas JSON envelope from stdin, runs Blender in background mode, stores Blender logs under `output/blender/`, and returns clean JSON with `.blend` and `.png` artifact paths.
 
 ## Targets
 
@@ -129,7 +129,7 @@ The command bridge is [bridges/codex_exec_blender.sh](bridges/codex_exec_blender
 | Unity | `http_json` | Unity package, WebSocket proxy, or C# editor bridge | Good for scenes, assets, scripts, tests, play mode. |
 | Unreal | `http_json` | Unreal MCP plugin or Python remote execution proxy | Treat as privileged editor access. |
 
-Copy `configs/targets.example.json` to `agenticapp.targets.json` for local ports, commands, and tokens. This override file is ignored by git.
+Copy `configs/targets.example.json` to `labcanvas.targets.json` for local ports, commands, and tokens. This override file is ignored by git.
 
 ## Research-Backed Design
 
@@ -148,7 +148,7 @@ Agent or MCP client
         |
         | command / dry-run / MCP config
         v
-AppAutoAction CLI
+LabCanvas CLI
         |
         | target registry
         v
@@ -167,7 +167,7 @@ Every dispatch receives the same envelope:
   "instruction": "Create a red cube at the origin",
   "payload": {},
   "metadata": {
-    "source": "agenticapp"
+    "source": "labcanvas"
   }
 }
 ```

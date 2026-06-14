@@ -2,12 +2,12 @@
 
 ## Project Structure & Module Organization
 
-AppAutoAction is a small Python CLI and web package. Production code lives in `src/agenticapp/`: `cli.py` handles commands, `config.py` loads target registries, `adapters.py` dispatches instructions, `webapp.py` serves the local studio, `artifacts.py` tracks generated files, `paper_figures.py` builds SVG grids, `openscad_export.py` writes CAD proxies, and `backends.py` stores AgInTi/BioRender settings. Tests live in `tests/`. Static web assets live in `src/agenticapp/web/static/`.
+AgInTi LabCanvas is a small Python CLI and web package. Production code lives in `src/agenticapp/`: `cli.py` handles commands, `config.py` loads target registries, `adapters.py` dispatches instructions, `webapp.py` serves the local studio, `artifacts.py` tracks generated files, `paper_figures.py` builds SVG grids, `openscad_export.py` writes CAD proxies, and `backends.py` stores AgInTi/BioRender settings. Tests live in `tests/`. Static web assets live in `src/agenticapp/web/static/`.
 
 ## Build, Test, and Development Commands
 
 - `PYTHONPATH=src python -m agenticapp list`: list configured Blender, BioRender, Unity, and Unreal targets.
-- `app-auto-action list`: run the installed console command.
+- `labcanvas list`: run the installed console command.
 - `PYTHONPATH=src python -m agenticapp doctor`: validate target configuration without sending commands.
 - `PYTHONPATH=src python -m agenticapp dispatch blender "Create a cube" --dry-run`: inspect the JSON envelope for a target.
 - `PYTHONPATH=src python -m agenticapp mcp-config`: emit MCP client configuration.
@@ -18,8 +18,8 @@ AppAutoAction is a small Python CLI and web package. Production code lives in `s
 - `PYTHONPATH=src python -m agenticapp studio figure-grid "optical icons 2x3" --rows 2 --cols 3`: run the same artifact action as the web canvas.
 - `PYTHONPATH=src python -m agenticapp studio dispatch blender "Prepare an editable paper figure setup"`: dry-run a configured target and register the envelope as an artifact.
 - `PYTHONPATH=src python -m unittest discover -s tests`: run the full test suite.
-- `scripts/install_blender_portable.sh`: install a no-sudo Blender binary under `~/.local/share/appautoaction/blender`.
-- `app-auto-action --config configs/blender-local-command.example.json dispatch blender "Draw a building"`: run the local Blender bridge.
+- `scripts/install_blender_portable.sh`: install a no-sudo Blender binary under `~/.local/share/labcanvas/blender`.
+- `labcanvas --config configs/blender-local-command.example.json dispatch blender "Draw a building"`: run the local Blender bridge.
 
 ## Coding Style & Naming Conventions
 
@@ -41,7 +41,7 @@ Use concise imperative commit messages, such as `Add Unity target validation` or
 
 ## Security & Configuration Tips
 
-Do not commit `agenticapp.targets.json`, `.aginti/.env`, or generated `output/` files; they may contain local endpoints, tokens, or bulky artifacts. Keep secrets in environment variables such as `BIORENDER_API_KEY`. Treat editor bridges as privileged automation surfaces: review dry-run payloads before enabling live dispatch.
+Do not commit `labcanvas.targets.json`, `.aginti/.env`, or generated `output/` files; they may contain local endpoints, tokens, or bulky artifacts. Keep secrets in environment variables such as `BIORENDER_API_KEY`. Treat editor bridges as privileged automation surfaces: review dry-run payloads before enabling live dispatch.
 
 ## Agent-Specific Instructions
 

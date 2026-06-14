@@ -89,7 +89,7 @@ function packageFilesForCommit() {
 }
 
 function verifyInstall(name, version, binSpec) {
-  const tempPrefix = fs.mkdtempSync(path.join(os.tmpdir(), "appautoaction-npm-install-"));
+  const tempPrefix = fs.mkdtempSync(path.join(os.tmpdir(), "labcanvas-npm-install-"));
   try {
     run(npmCommand, ["install", "--prefix", tempPrefix, "-g", `${name}@${version}`]);
     const binNames = typeof binSpec === "string" ? [path.basename(binSpec)] : Object.keys(binSpec || {});

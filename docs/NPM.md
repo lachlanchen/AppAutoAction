@@ -1,18 +1,18 @@
 # npm Package
 
-AppAutoAction is packaged for npm as `@lazyingart/app-auto-action`.
+AgInTi LabCanvas is packaged for npm as `@lazyingart/labcanvas`.
 
-Current published version: `0.1.0`.
+Initial package version: `0.1.0`.
 
 ## Install
 
 ```bash
-npm install -g @lazyingart/app-auto-action
-app-auto-action --version
-app-auto-action webapp start --port 19473
+npm install -g @lazyingart/labcanvas
+labcanvas --version
+labcanvas webapp start --port 19473
 ```
 
-The npm package is a thin Node wrapper around the bundled Python source. It requires Python 3.10+ on `PATH`; set `APPAUTOACTION_PYTHON=/path/to/python` if needed.
+The npm package is a thin Node wrapper around the bundled Python source. It requires Python 3.10+ on `PATH`; set `LABCANVAS_PYTHON=/path/to/python` if needed.
 
 ## Package Checks
 
@@ -47,9 +47,9 @@ Prefer GitHub Actions trusted publishing once npm trust is configured for this r
 
 Trusted Publisher settings on npm:
 
-- Package: `@lazyingart/app-auto-action`
+- Package: `@lazyingart/labcanvas`
 - Publisher: GitHub Actions
-- Repository: `lachlanchen/AppAutoAction`
+- Repository: `lachlanchen/AgInTi-LabCanvas`
 - Workflow filename: `npm-publish.yml`
 - Environment: blank, unless a GitHub deployment environment is added later
 
@@ -57,7 +57,7 @@ Equivalent setup command:
 
 ```bash
 npm install -g npm@^11.10.0
-npm trust github @lazyingart/app-auto-action --repo lachlanchen/AppAutoAction --file npm-publish.yml
+npm trust github @lazyingart/labcanvas --repo lachlanchen/AgInTi-LabCanvas --file npm-publish.yml
 ```
 
 If the CLI reports that 2FA is required without opening a browser flow, configure the trusted publisher from the npm package settings page using the same package, repository, and workflow filename above.
@@ -65,8 +65,8 @@ If the CLI reports that 2FA is required without opening a browser flow, configur
 For local bootstrap publishing, use a temporary npm config generated from an uncommitted env file:
 
 ```bash
-APPAUTOACTION_NPM_ENV=../Agent/AgInTiFlow/.env npm run publish:env:whoami
-APPAUTOACTION_NPM_ENV=../Agent/AgInTiFlow/.env npm run publish:env
+LABCANVAS_NPM_ENV=../Agent/AgInTiFlow/.env npm run publish:env:whoami
+LABCANVAS_NPM_ENV=../Agent/AgInTiFlow/.env npm run publish:env
 ```
 
-`APPAUTOACTION_NPM_ENV` can also point to `../AAPS/.env` when that file contains `NPM_TOKEN` or `NODE_AUTH_TOKEN`. The helper writes a temporary `.npmrc`, runs npm, and deletes the credential material. Never commit npm tokens, `.env`, `.npmrc`, OTPs, or debug logs.
+`LABCANVAS_NPM_ENV` can also point to `../AAPS/.env` when that file contains `NPM_TOKEN` or `NODE_AUTH_TOKEN`. The helper writes a temporary `.npmrc`, runs npm, and deletes the credential material. Never commit npm tokens, `.env`, `.npmrc`, OTPs, or debug logs.

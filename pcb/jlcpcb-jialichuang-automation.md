@@ -4,7 +4,7 @@ Date: 2026-06-09
 
 ## Short Answer
 
-Yes, AppAutoAction can support JLCPCB/Jialichuang ordering workflows, but the safe default should be **prepare, validate, upload, quote, and stop before final order/payment** unless the user explicitly confirms the exact order.
+Yes, AgInTi LabCanvas can support JLCPCB/Jialichuang ordering workflows, but the safe default should be **prepare, validate, upload, quote, and stop before final order/payment** unless the user explicitly confirms the exact order.
 
 There are three practical routes:
 
@@ -18,7 +18,7 @@ JLCPCB now documents an official API platform. The PCB API is described as suppo
 
 Access is not open by default. JLCPCB says users must apply, applications are reviewed, and approval depends on factors such as previous orders, company profile, and business situation. API partners must also follow branding restrictions.
 
-Implication for AppAutoAction: add an API adapter, but make it optional and credential-gated. Store API credentials outside git, and keep dry-run mode as the default.
+Implication for AgInTi LabCanvas: add an API adapter, but make it optional and credential-gated. Store API credentials outside git, and keep dry-run mode as the default.
 
 Sources:
 
@@ -60,7 +60,7 @@ Sources:
 - https://github.com/mixelpixx/KiCAD-MCP-Server
 - https://github.com/asukiaaa/gerber_to_order
 
-## Recommended AppAutoAction Workflow
+## Recommended AgInTi LabCanvas Workflow
 
 For KiCad projects:
 

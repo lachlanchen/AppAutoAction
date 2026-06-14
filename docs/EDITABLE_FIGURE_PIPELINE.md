@@ -1,6 +1,6 @@
 # Editable Figure Pipeline
 
-This is the product rule for AppAutoAction paper figures: figure generation must be editable, atomic, and maintainable. A single generated bitmap is allowed only as an overview concept, never as the final source of truth.
+This is the product rule for AgInTi LabCanvas paper figures: figure generation must be editable, atomic, and maintainable. A single generated bitmap is allowed only as an overview concept, never as the final source of truth.
 
 ## Core Principle
 

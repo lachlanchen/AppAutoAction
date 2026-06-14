@@ -65,5 +65,6 @@ jobs:
           VERSION="$(node -p "require('./package.json').version")"
           TMP_PREFIX="$(mktemp -d)"
           npm install --prefix "$TMP_PREFIX" -g "$NAME@$VERSION"
+          "$TMP_PREFIX/bin/labcanvas" --version
           "$TMP_PREFIX/bin/app-auto-action" --version
           "$TMP_PREFIX/bin/agenticapp" --version

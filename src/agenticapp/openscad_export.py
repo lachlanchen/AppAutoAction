@@ -23,7 +23,7 @@ def export_scene_to_openscad(spec: dict[str, Any], output_dir: str | Path) -> Op
     path = Path(output_dir) / f"{slug}.scad"
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        f"// AppAutoAction OpenSCAD export: {str(spec.get('title') or slug)}",
+        f"// AgInTi LabCanvas OpenSCAD export: {str(spec.get('title') or slug)}",
         "// This is a simplified CAD proxy for planning mechanical layout.",
         "$fn = 48;",
         "",

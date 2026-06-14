@@ -1,6 +1,6 @@
 # CAD References
 
-This folder stores source-backed reference notes for AppAutoAction mechanical design work. Keep concise scale tables here so generated parts can be checked in CAD, slicers, and printed test coupons.
+This folder stores source-backed reference notes for AgInTi LabCanvas mechanical design work. Keep concise scale tables here so generated parts can be checked in CAD, slicers, and printed test coupons.
 
 ## Current References
 

@@ -11,7 +11,7 @@ import bpy
 
 def main() -> int:
     envelope = read_envelope()
-    output_dir = Path(os.environ.get("APPAUTOACTION_OUTPUT_DIR", "output/blender")).resolve()
+    output_dir = Path(os.environ.get("LABCANVAS_OUTPUT_DIR") or os.environ.get("APPAUTOACTION_OUTPUT_DIR", "output/blender")).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     scene_name = slug(envelope.get("instruction") or "agentic-building")
@@ -37,7 +37,7 @@ def main() -> int:
 
 
 def read_envelope() -> dict:
-    envelope_file = os.environ.get("APPAUTOACTION_ENVELOPE_FILE")
+    envelope_file = os.environ.get("LABCANVAS_ENVELOPE_FILE") or os.environ.get("APPAUTOACTION_ENVELOPE_FILE")
     if envelope_file:
         return json.loads(Path(envelope_file).read_text(encoding="utf-8"))
     raw = sys.stdin.read().strip()
@@ -45,7 +45,7 @@ def read_envelope() -> dict:
 
 
 def write_result(result: dict) -> None:
-    result_file = os.environ.get("APPAUTOACTION_RESULT_FILE")
+    result_file = os.environ.get("LABCANVAS_RESULT_FILE") or os.environ.get("APPAUTOACTION_RESULT_FILE")
     payload = json.dumps(result, indent=2, sort_keys=True)
     if result_file:
         Path(result_file).write_text(payload, encoding="utf-8")

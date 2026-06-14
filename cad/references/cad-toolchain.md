@@ -27,14 +27,14 @@ Recreate from the repository spec:
 
 ```bash
 mamba env create -p cad/.conda/cad-python -f cad/environment-cad-python.yml
-cad/.conda/cad-python/bin/python -m ipykernel install --user --name appautoaction-cad --display-name "AppAutoAction CAD Python"
+cad/.conda/cad-python/bin/python -m ipykernel install --user --name labcanvas-cad --display-name "AgInTi LabCanvas CAD Python"
 ```
 
 Registered Jupyter kernel:
 
 ```text
-AppAutoAction CAD Python
-kernel name: appautoaction-cad
+AgInTi LabCanvas CAD Python
+kernel name: labcanvas-cad
 ```
 
 Verified packages:

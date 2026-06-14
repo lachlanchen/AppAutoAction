@@ -1,3 +1,3 @@
-"""AgenticApp control hub."""
+"""AgInTi LabCanvas control hub."""
 
 __version__ = "0.1.0"

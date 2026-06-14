@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
-  <title id="title">AgInTi LabCanvas legacy logo path</title>
-  <desc id="desc">A compact mark with connected tool nodes and an optical beam for editable scientific artifacts.</desc>
+  <title id="title">AgInTi LabCanvas logo</title>
+  <desc id="desc">A compact mark with connected tool nodes, a canvas letterform, and an optical beam for editable scientific artifacts.</desc>
   <defs>
     <linearGradient id="plate" x1="12" x2="84" y1="18" y2="82" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#f8fbff"/>

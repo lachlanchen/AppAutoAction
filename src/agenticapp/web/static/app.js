@@ -776,7 +776,8 @@ const TRANSLATIONS = {
 };
 
 const DEFAULT_LOCALE = "en";
-let currentLocale = localStorage.getItem("appautoaction-locale") || DEFAULT_LOCALE;
+let currentLocale =
+  localStorage.getItem("labcanvas-locale") || localStorage.getItem("appautoaction-locale") || DEFAULT_LOCALE;
 
 let spec = null;
 let settings = null;
@@ -1153,7 +1154,7 @@ function collectSettings() {
 function toggleTheme() {
   const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
-  localStorage.setItem("appautoaction-theme", next);
+  localStorage.setItem("labcanvas-theme", next);
   syncThemeButton();
 }
 
@@ -1184,7 +1185,7 @@ function applyLocale(nextLocale, persist) {
   document.documentElement.lang = currentLocale;
   localeSelect.value = currentLocale;
   if (persist) {
-    localStorage.setItem("appautoaction-locale", currentLocale);
+    localStorage.setItem("labcanvas-locale", currentLocale);
   }
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.dataset.i18n);
