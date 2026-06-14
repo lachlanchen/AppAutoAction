@@ -10,6 +10,11 @@ agenticapp.targets.json
 labcanvas.targets.json
 output/
 *.blend1
+.env
+.env.*
+!.env.example
+.npmrc
+*.tgz
 .aginti/.env
 .aginti/.env.*
 !.aginti/.env.example

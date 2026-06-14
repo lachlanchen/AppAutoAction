@@ -65,8 +65,17 @@ If the CLI reports that 2FA is required without opening a browser flow, configur
 For local bootstrap publishing, use a temporary npm config generated from an uncommitted env file:
 
 ```bash
+cp .env.example .env
+chmod 600 .env
+# Fill NPM_TOKEN or NODE_AUTH_TOKEN in .env without committing it.
+
+read -rsp "npm token: " NPM_TOKEN; printf "\nNPM_TOKEN=%s\nNODE_AUTH_TOKEN=%s\nNPM_CONFIG_REGISTRY=https://registry.npmjs.org/\n" "$NPM_TOKEN" "$NPM_TOKEN" > .env; chmod 600 .env
+
+npm run publish:env:whoami
+npm run publish:env
+
 LABCANVAS_NPM_ENV=../Agent/AgInTiFlow/.env npm run publish:env:whoami
 LABCANVAS_NPM_ENV=../Agent/AgInTiFlow/.env npm run publish:env
 ```
 
-`LABCANVAS_NPM_ENV` can also point to `../AAPS/.env` when that file contains `NPM_TOKEN` or `NODE_AUTH_TOKEN`. The helper writes a temporary `.npmrc`, runs npm, and deletes the credential material. Never commit npm tokens, `.env`, `.npmrc`, OTPs, or debug logs.
+`LABCANVAS_NPM_ENV` can also point to `../AAPS/.env` when that file contains `NPM_TOKEN` or `NODE_AUTH_TOKEN`. The helper writes a temporary `.npmrc`, runs npm, and deletes the credential material. Root `.env`, `.env.*`, `.npmrc`, and generated tarballs are ignored by git. Never commit npm tokens, `.env`, `.npmrc`, OTPs, or debug logs.
